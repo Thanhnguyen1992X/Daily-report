@@ -1,764 +1,1205 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Market Dashboard</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            overflow-x: auto;
-        }
-
-        .dashboard {
-            padding: 20px;
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-            min-height: 100vh;
-        }
-
-        .main-panel {
-            display: grid;
-            grid-template-rows: auto 1fr auto;
-            gap: 20px;
-        }
-
-        .side-panel {
-            display: grid;
-            grid-template-rows: auto auto 1fr;
-            gap: 20px;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: left 0.6s;
-        }
-
-        .card:hover::before {
-            left: 100%;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
-        }
-
-        .stock-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            animation: slideDown 0.8s ease;
-        }
-
-        .stock-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .stock-symbol {
-            font-size: 24px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        .stock-name {
-            color: #7f8c8d;
-            font-size: 14px;
-        }
-
-        .stock-price {
-            text-align: right;
-        }
-
-        .price {
-            font-size: 32px;
-            font-weight: bold;
-            color: #27ae60;
-            animation: pulse 2s infinite;
-        }
-
-        .price-change {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: #27ae60;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
-        .price-change.negative {
-            color: #e74c3c;
-        }
-
-        .chart-container {
-            height: 400px;
-            position: relative;
-            margin: 20px 0;
-        }
-
-        .chart-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .tab {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 20px;
-            background: #ecf0f1;
-            color: #2c3e50;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .tab.active {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            transform: scale(1.05);
-        }
-
-        .tab:hover:not(.active) {
-            background: #d5dbdb;
-            transform: translateY(-2px);
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .metric-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 15px;
-            border-radius: 15px;
-            border-left: 4px solid #667eea;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .metric-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, transparent, rgba(102, 126, 234, 0.1), transparent);
-            transition: right 0.5s;
-        }
-
-        .metric-card:hover::after {
-            right: 100%;
-        }
-
-        .metric-card:hover {
-            transform: translateX(5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .metric-label {
-            font-size: 12px;
-            color: #6c757d;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
-        }
-
-        .metric-value {
-            font-size: 18px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        .watchlist {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .watchlist::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .watchlist::-webkit-scrollbar-track {
-            background: #f1f2f6;
-            border-radius: 10px;
-        }
-
-        .watchlist::-webkit-scrollbar-thumb {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            border-radius: 10px;
-        }
-
-        .watchlist-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #ecf0f1;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .watchlist-item:hover {
-            background: rgba(102, 126, 234, 0.05);
-            padding-left: 10px;
-            border-radius: 10px;
-        }
-
-        .watchlist-stock {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .watchlist-symbol {
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        .watchlist-name {
-            font-size: 12px;
-            color: #7f8c8d;
-        }
-
-        .watchlist-price {
-            text-align: right;
-        }
-
-        .watchlist-value {
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        .watchlist-change {
-            font-size: 12px;
-            color: #27ae60;
-        }
-
-        .watchlist-change.negative {
-            color: #e74c3c;
-        }
-
-        .news-item {
-            padding: 15px 0;
-            border-bottom: 1px solid #ecf0f1;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .news-item:hover {
-            background: rgba(102, 126, 234, 0.05);
-            padding-left: 15px;
-            border-radius: 10px;
-        }
-
-        .news-title {
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 5px;
-            line-height: 1.4;
-        }
-
-        .news-time {
-            font-size: 12px;
-            color: #7f8c8d;
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .section-title::before {
-            content: '';
-            width: 4px;
-            height: 20px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            border-radius: 2px;
-        }
-
-        .loading-indicator {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .fadeInUp {
-            animation: fadeInUp 0.6s ease forwards;
-        }
-
-        .glow-effect {
-            position: relative;
-        }
-
-        .glow-effect::after {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, #667eea, #764ba2, #667eea);
-            border-radius: 22px;
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .glow-effect:hover::after {
-            opacity: 1;
-        }
-
-        .status-indicator {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #27ae60;
-            animation: blink 2s infinite;
-            margin-right: 8px;
-        }
-
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0.3; }
-        }
-
-        .performance-bar {
-            height: 4px;
-            background: #ecf0f1;
-            border-radius: 2px;
-            margin-top: 8px;
-            overflow: hidden;
-        }
-
-        .performance-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #27ae60, #2ecc71);
-            border-radius: 2px;
-            transition: width 1s ease;
-        }
-
-        .performance-fill.negative {
-            background: linear-gradient(90deg, #e74c3c, #c0392b);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financial Dashboard Thanh đẹp trai</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#3b82f6',secondary:'#10b981'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body {
+font-family: 'Inter', sans-serif;
+background-color: #0f172a;
+color: #e2e8f0;
+}
+.market-ticker {
+animation: ticker 30s linear infinite;
+}
+@keyframes ticker {
+0% { transform: translateX(0); }
+100% { transform: translateX(-50%); }
+}
+input[type="range"]::-webkit-slider-thumb {
+appearance: none;
+width: 16px;
+height: 16px;
+background: #3b82f6;
+border-radius: 50%;
+cursor: pointer;
+}
+input[type="checkbox"], input[type="radio"] {
+display: none;
+}
+.custom-checkbox {
+position: relative;
+display: inline-block;
+width: 18px;
+height: 18px;
+background: #1e293b;
+border-radius: 4px;
+cursor: pointer;
+}
+.custom-checkbox.checked::after {
+content: "";
+position: absolute;
+top: 3px;
+left: 3px;
+width: 12px;
+height: 12px;
+background: #3b82f6;
+border-radius: 2px;
+}
+.custom-radio {
+position: relative;
+display: inline-block;
+width: 18px;
+height: 18px;
+background: #1e293b;
+border-radius: 50%;
+cursor: pointer;
+}
+.custom-radio.checked::after {
+content: "";
+position: absolute;
+top: 4px;
+left: 4px;
+width: 10px;
+height: 10px;
+background: #3b82f6;
+border-radius: 50%;
+}
+.custom-switch {
+position: relative;
+display: inline-block;
+width: 40px;
+height: 20px;
+background: #1e293b;
+border-radius: 20px;
+cursor: pointer;
+transition: all 0.3s;
+}
+.custom-switch::after {
+content: "";
+position: absolute;
+top: 2px;
+left: 2px;
+width: 16px;
+height: 16px;
+background: #e2e8f0;
+border-radius: 50%;
+transition: all 0.3s;
+}
+.custom-switch.active {
+background: #3b82f6;
+}
+.custom-switch.active::after {
+transform: translateX(20px);
+}
+.widget {
+background-color: #1e293b;
+border: 1px solid #334155;
+border-radius: 8px;
+}
+.widget-header {
+border-bottom: 1px solid #334155;
+}
+.tab-active {
+color: #3b82f6;
+border-bottom: 2px solid #3b82f6;
+}
+.chart-tooltip {
+background: rgba(255, 255, 255, 0.8);
+border-radius: 4px;
+padding: 8px;
+color: #1e293b;
+}
+.scrollbar-hide::-webkit-scrollbar {
+display: none;
+}
+.scrollbar-hide {
+-ms-overflow-style: none;
+scrollbar-width: none;
+}
+</style>
 </head>
-<body>
-    <div class="dashboard">
-        <div class="main-panel">
-            <!-- Main Stock Card -->
-            <div class="card glow-effect">
-                <div class="stock-header">
-                    <div class="stock-info">
-                        <div>
-                            <div class="stock-symbol">JMCB</div>
-                            <div class="stock-name">Joint Stock Commercial Bank for Investment and Development of Vietnam</div>
-                        </div>
-                    </div>
-                    <div class="stock-price">
-                        <div class="price">$36,650</div>
-                        <div class="price-change">
-                            <span>▲</span>
-                            <span>+840 (+2.35%)</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="chart-tabs">
-                    <button class="tab active" onclick="switchChart('1D')">1D</button>
-                    <button class="tab" onclick="switchChart('1W')">1W</button>
-                    <button class="tab" onclick="switchChart('1M')">1M</button>
-                    <button class="tab" onclick="switchChart('3M')">3M</button>
-                    <button class="tab" onclick="switchChart('1Y')">1Y</button>
-                </div>
-
-                <div class="chart-container">
-                    <canvas id="priceChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Metrics Grid -->
-            <div class="card fadeInUp">
-                <div class="section-title">Key Metrics</div>
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <div class="metric-label">Market Cap</div>
-                        <div class="metric-value">$2.45B</div>
-                        <div class="performance-bar">
-                            <div class="performance-fill" style="width: 75%"></div>
-                        </div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-label">P/E Ratio</div>
-                        <div class="metric-value">18.5</div>
-                        <div class="performance-bar">
-                            <div class="performance-fill" style="width: 60%"></div>
-                        </div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-label">Volume</div>
-                        <div class="metric-value">1.2M</div>
-                        <div class="performance-bar">
-                            <div class="performance-fill" style="width: 85%"></div>
-                        </div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-label">52W High</div>
-                        <div class="metric-value">$42,000</div>
-                        <div class="performance-bar">
-                            <div class="performance-fill" style="width: 87%"></div>
-                        </div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-label">52W Low</div>
-                        <div class="metric-value">$28,500</div>
-                        <div class="performance-bar">
-                            <div class="performance-fill negative" style="width: 68%"></div>
-                        </div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-label">Dividend Yield</div>
-                        <div class="metric-value">3.2%</div>
-                        <div class="performance-bar">
-                            <div class="performance-fill" style="width: 64%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="side-panel">
-            <!-- Market Status -->
-            <div class="card fadeInUp">
-                <div class="section-title">
-                    <span class="status-indicator"></span>
-                    Market Status
-                </div>
-                <div style="color: #27ae60; font-weight: 600;">
-                    <div class="loading-indicator" style="display: inline-block; margin-right: 10px;"></div>
-                    Market Open - Live Data
-                </div>
-            </div>
-
-            <!-- Watchlist -->
-            <div class="card fadeInUp">
-                <div class="section-title">Watchlist</div>
-                <div class="watchlist">
-                    <div class="watchlist-item" onclick="animateItem(this)">
-                        <div class="watchlist-stock">
-                            <div class="watchlist-symbol">VCB</div>
-                            <div class="watchlist-name">Vietcombank</div>
-                        </div>
-                        <div class="watchlist-price">
-                            <div class="watchlist-value">98,500</div>
-                            <div class="watchlist-change">+1.2%</div>
-                        </div>
-                    </div>
-                    <div class="watchlist-item" onclick="animateItem(this)">
-                        <div class="watchlist-stock">
-                            <div class="watchlist-symbol">BID</div>
-                            <div class="watchlist-name">BIDV</div>
-                        </div>
-                        <div class="watchlist-price">
-                            <div class="watchlist-value">45,800</div>
-                            <div class="watchlist-change negative">-0.8%</div>
-                        </div>
-                    </div>
-                    <div class="watchlist-item" onclick="animateItem(this)">
-                        <div class="watchlist-stock">
-                            <div class="watchlist-symbol">CTG</div>
-                            <div class="watchlist-name">VietinBank</div>
-                        </div>
-                        <div class="watchlist-price">
-                            <div class="watchlist-value">32,100</div>
-                            <div class="watchlist-change">+2.1%</div>
-                        </div>
-                    </div>
-                    <div class="watchlist-item" onclick="animateItem(this)">
-                        <div class="watchlist-stock">
-                            <div class="watchlist-symbol">MBB</div>
-                            <div class="watchlist-name">MB Bank</div>
-                        </div>
-                        <div class="watchlist-price">
-                            <div class="watchlist-value">28,900</div>
-                            <div class="watchlist-change">+0.5%</div>
-                        </div>
-                    </div>
-                    <div class="watchlist-item" onclick="animateItem(this)">
-                        <div class="watchlist-stock">
-                            <div class="watchlist-symbol">TCB</div>
-                            <div class="watchlist-name">Techcombank</div>
-                        </div>
-                        <div class="watchlist-price">
-                            <div class="watchlist-value">52,300</div>
-                            <div class="watchlist-change">+1.8%</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Market News -->
-            <div class="card fadeInUp">
-                <div class="section-title">Market News</div>
-                <div class="news-item" onclick="animateNews(this)">
-                    <div class="news-title">Thanh đẹp trai</div>
-                    <div class="news-time">2 hours ago</div>
-                </div>
-                <div class="news-item" onclick="animateNews(this)">
-                    <div class="news-title">JMCB Announces Strategic Partnership with Tech Giants Thanh đẹp trai </div>
-                    <div class="news-time">4 hours ago</div>
-                </div>
-                <div class="news-item" onclick="animateNews(this)">
-                    <div class="news-title">Digital Banking Transformation Drives Growth Thanh đẹp trai </div>
-                    <div class="news-time">6 hours ago</div>
-                </div>
-                <div class="news-item" onclick="animateNews(this)">
-                    <div class="news-title">Vietnam Stock Market Reaches New Heights</div>
-                    <div class="news-time">8 hours ago</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Chart setup
-        let priceChart;
-        const ctx = document.getElementById('priceChart').getContext('2d');
-
-        // Sample data for different time periods
-        const chartData = {
-            '1D': {
-                labels: ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00'],
-                data: [35800, 36200, 36100, 36400, 36650, 36500, 36800, 36650]
-            },
-            '1W': {
-                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                data: [35500, 35800, 36200, 36400, 36100, 36650, 36650]
-            },
-            '1M': {
-                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                data: [34200, 35100, 35800, 36650]
-            },
-            '3M': {
-                labels: ['Month 1', 'Month 2', 'Month 3'],
-                data: [32500, 34800, 36650]
-            },
-            '1Y': {
-                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-                data: [28500, 31200, 34500, 36650]
-            }
-        };
-
-        function initChart() {
-            priceChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: chartData['1D'].labels,
-                    datasets: [{
-                        label: 'Price',
-                        data: chartData['1D'].data,
-                        borderColor: 'rgba(102, 126, 234, 1)',
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: 'rgba(102, 126, 234, 1)',
-                        pointBorderColor: 'white',
-                        pointBorderWidth: 2,
-                        pointRadius: 6,
-                        pointHoverRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: {
-                                color: '#7f8c8d'
-                            }
-                        },
-                        y: {
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.1)'
-                            },
-                            ticks: {
-                                color: '#7f8c8d',
-                                callback: function(value) {
-                                    return '$' + value.toLocaleString();
-                                }
-                            }
-                        }
-                    },
-                    interaction: {
-                        intersect: false,
-                        mode: 'index'
-                    },
-                    animation: {
-                        duration: 1000,
-                        easing: 'easeInOutQuart'
-                    }
-                }
-            });
+<body class="min-h-screen">
+<!-- Header -->
+<header class="bg-slate-800 border-b border-slate-700">
+<!-- Top Header -->
+<div class="px-6 py-3 flex items-center justify-between">
+<div class="flex items-center">
+<h1 class="text-2xl font-['Pacifico'] text-primary mr-8">logo</h1>
+<div class="hidden md:flex space-x-1">
+<button class="px-3 py-2 text-sm text-slate-300 hover:text-white !rounded-button">Stocks</button>
+<button class="px-3 py-2 text-sm text-primary font-medium border-b-2 border-primary !rounded-button">Forex</button>
+<button class="px-3 py-2 text-sm text-slate-300 hover:text-white !rounded-button">Crypto</button>
+<button class="px-3 py-2 text-sm text-slate-300 hover:text-white !rounded-button">Analysis</button>
+<button class="px-3 py-2 text-sm text-slate-300 hover:text-white !rounded-button">Research</button>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<div class="relative">
+<input type="text" placeholder="Search markets..." class="bg-slate-700 border-none text-sm rounded-lg pl-9 pr-4 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-primary">
+<div class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 flex items-center justify-center text-slate-400">
+<i class="ri-search-line"></i>
+</div>
+</div>
+<div class="flex items-center space-x-3">
+<button class="w-9 h-9 flex items-center justify-center bg-slate-700 rounded-full text-slate-300 hover:bg-slate-600">
+<i class="ri-notification-3-line"></i>
+</button>
+<button class="w-9 h-9 flex items-center justify-center bg-slate-700 rounded-full text-slate-300 hover:bg-slate-600">
+<i class="ri-settings-3-line"></i>
+</button>
+<div class="flex items-center space-x-2">
+<div class="w-9 h-9 bg-primary rounded-full flex items-center justify-center text-white font-medium">
+JD
+</div>
+<span class="text-sm font-medium hidden md:inline">James Donovan</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Market Ticker -->
+<div class="bg-slate-900 py-2 overflow-hidden">
+<div class="market-ticker flex items-center whitespace-nowrap">
+<div class="flex items-center space-x-8">
+<div class="flex items-center">
+<span class="text-xs font-medium mr-2">S&P 500</span>
+<span class="text-xs text-green-400">5,236.42 +0.85%</span>
+</div>
+<div class="flex items-center">
+<span class="text-xs font-medium mr-2">NASDAQ</span>
+<span class="text-xs text-green-400">16,742.39 +1.12%</span>
+</div>
+<div class="flex items-center">
+<span class="text-xs font-medium mr-2">DOW</span>
+<span class="text-xs text-red-400">38,671.23 -0.23%</span>
+</div>
+<div class="flex items-center">
+<span class="text-xs font-medium mr-2">EUR/USD</span>
+<span class="text-xs text-green-400">1.0845 +0.32%</span>
+</div>
+<div class="flex items-center">
+<span class="text-xs font-medium mr-2">GBP/USD</span>
+<span class="text-xs text-green-400">1.2732 +0.18%</span>
+</div>
+<div class="flex items-center">
+<span class="text-xs font-medium mr-2">USD/JPY</span>
+<span class="text-xs text-red-400">153.42 -0.45%</span>
+</div>
+<div class="flex items-center">
+<span class="text-xs font-medium mr-2">BTC/USD</span>
+<span class="text-xs text-green-400">68,423.15 +2.74%</span>
+</div>
+<div class="flex items-center">
+<span class="text-xs font-medium mr-2">ETH/USD</span>
+<span class="text-xs text-green-400">3,842.67 +1.93%</span>
+</div>
+<div class="flex items-center">
+<span class="text-xs font-medium mr-2">GOLD</span>
+<span class="text-xs text-green-400">2,384.30 +0.65%</span>
+</div>
+<div class="flex items-center">
+<span class="text-xs font-medium mr-2">CRUDE OIL</span>
+<span class="text-xs text-red-400">82.14 -1.27%</span>
+</div>
+</div>
+<div class="flex items-center space-x-8 ml-8">
+<div class="flex items-center">
+<span class="text-xs font-medium mr-2">S&P 500</span>
+<span class="text-xs text-green-400">5,236.42 +0.85%</span>
+</div>
+<div class="flex items-center">
+<span class="text-xs font-medium mr-2">NASDAQ</span>
+<span class="text-xs text-green-400">16,742.39 +1.12%</span>
+</div>
+<div class="flex items-center">
+<span class="text-xs font-medium mr-2">DOW</span>
+<span class="text-xs text-red-400">38,671.23 -0.23%</span>
+</div>
+<div class="flex items-center">
+<span class="text-xs font-medium mr-2">EUR/USD</span>
+<span class="text-xs text-green-400">1.0845 +0.32%</span>
+</div>
+<div class="flex items-center">
+<span class="text-xs font-medium mr-2">GBP/USD</span>
+<span class="text-xs text-green-400">1.2732 +0.18%</span>
+</div>
+<div class="flex items-center">
+<span class="text-xs font-medium mr-2">USD/JPY</span>
+<span class="text-xs text-red-400">153.42 -0.45%</span>
+</div>
+<div class="flex items-center">
+<span class="text-xs font-medium mr-2">BTC/USD</span>
+<span class="text-xs text-green-400">68,423.15 +2.74%</span>
+</div>
+<div class="flex items-center">
+<span class="text-xs font-medium mr-2">ETH/USD</span>
+<span class="text-xs text-green-400">3,842.67 +1.93%</span>
+</div>
+<div class="flex items-center">
+<span class="text-xs font-medium mr-2">GOLD</span>
+<span class="text-xs text-green-400">2,384.30 +0.65%</span>
+</div>
+<div class="flex items-center">
+<span class="text-xs font-medium mr-2">CRUDE OIL</span>
+<span class="text-xs text-red-400">82.14 -1.27%</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="container mx-auto px-4 py-6">
+<!-- Dashboard Controls -->
+<div class="flex justify-between items-center mb-6">
+<div class="flex items-center space-x-4">
+<h2 class="text-xl font-semibold">Forex Dashboard</h2>
+<div class="flex items-center space-x-2">
+<span class="text-sm text-slate-400">June 20, 2025</span>
+<span class="text-xs px-2 py-1 bg-green-500/10 text-green-400 rounded-full">Market Open</span>
+</div>
+</div>
+<div class="flex items-center space-x-3">
+<button class="flex items-center space-x-1 bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-button text-sm whitespace-nowrap">
+<i class="ri-add-line"></i>
+<span>Add Widget</span>
+</button>
+<button class="flex items-center space-x-1 bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-button text-sm whitespace-nowrap">
+<i class="ri-layout-grid-line"></i>
+<span>Layout</span>
+</button>
+<button class="flex items-center space-x-1 bg-primary hover:bg-primary/90 px-3 py-1.5 rounded-button text-sm whitespace-nowrap">
+<i class="ri-refresh-line"></i>
+<span>Refresh</span>
+</button>
+</div>
+</div>
+<!-- Main Chart Widget -->
+<div class="widget mb-6">
+<div class="widget-header p-4 flex justify-between items-center">
+<div class="flex items-center space-x-4">
+<h3 class="font-medium">EUR/USD</h3>
+<div class="flex items-center space-x-2">
+<span class="text-xl font-semibold">1.0845</span>
+<span class="text-sm text-green-400">+0.0035 (+0.32%)</span>
+</div>
+</div>
+<div class="flex items-center space-x-3">
+<div class="flex rounded-full bg-slate-700 p-1">
+<button class="px-3 py-1 text-xs rounded-full bg-slate-800 !rounded-button">1H</button>
+<button class="px-3 py-1 text-xs !rounded-button">4H</button>
+<button class="px-3 py-1 text-xs !rounded-button">1D</button>
+<button class="px-3 py-1 text-xs !rounded-button">1W</button>
+<button class="px-3 py-1 text-xs !rounded-button">1M</button>
+</div>
+<div class="flex items-center space-x-2">
+<button class="w-8 h-8 flex items-center justify-center bg-slate-700 hover:bg-slate-600 rounded-full">
+<i class="ri-line-chart-line"></i>
+</button>
+<button class="w-8 h-8 flex items-center justify-center bg-slate-700 hover:bg-slate-600 rounded-full">
+<i class="ri-bar-chart-2-line"></i>
+</button>
+<button class="w-8 h-8 flex items-center justify-center bg-slate-700 hover:bg-slate-600 rounded-full">
+<i class="ri-more-2-fill"></i>
+</button>
+</div>
+</div>
+</div>
+<div id="mainChart" class="w-full h-96"></div>
+<div class="p-4 border-t border-slate-700 flex items-center justify-between">
+<div class="flex items-center space-x-4">
+<button class="flex items-center space-x-1 bg-green-500/10 hover:bg-green-500/20 text-green-400 px-3 py-1.5 rounded-button text-sm whitespace-nowrap">
+<i class="ri-arrow-right-up-line"></i>
+<span>Buy</span>
+</button>
+<button class="flex items-center space-x-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 px-3 py-1.5 rounded-button text-sm whitespace-nowrap">
+<i class="ri-arrow-right-down-line"></i>
+<span>Sell</span>
+</button>
+</div>
+<div class="flex items-center space-x-4">
+<div class="flex items-center space-x-2">
+<span class="text-xs text-slate-400">Spread:</span>
+<span class="text-xs">0.9 pips</span>
+</div>
+<div class="flex items-center space-x-2">
+<span class="text-xs text-slate-400">Volume:</span>
+<span class="text-xs">127.4K</span>
+</div>
+<div class="flex items-center space-x-2">
+<span class="text-xs text-slate-400">Range:</span>
+<span class="text-xs">1.0821 - 1.0859</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Dashboard Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Currency Performance Radar Chart -->
+<div class="widget">
+<div class="widget-header p-4 flex justify-between items-center">
+<h3 class="font-medium">Currency Performance</h3>
+<button class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white">
+<i class="ri-more-2-fill"></i>
+</button>
+</div>
+<div id="radarChart" class="w-full h-64"></div>
+<div class="p-3 border-t border-slate-700">
+<div class="flex items-center justify-between text-xs">
+<span class="text-slate-400">Last updated: 12:45 PM</span>
+<button class="text-primary hover:underline">View details</button>
+</div>
+</div>
+</div>
+<!-- Currency Flow Sankey -->
+<div class="widget">
+<div class="widget-header p-4 flex justify-between items-center">
+<h3 class="font-medium">Currency Flow Analysis</h3>
+<button class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white">
+<i class="ri-more-2-fill"></i>
+</button>
+</div>
+<div id="sankeyChart" class="w-full h-64"></div>
+<div class="p-3 border-t border-slate-700">
+<div class="flex items-center justify-between text-xs">
+<span class="text-slate-400">Volume: $2.4B</span>
+<button class="text-primary hover:underline">View details</button>
+</div>
+</div>
+</div>
+<!-- Market Distribution -->
+<div class="widget">
+<div class="widget-header p-4 flex justify-between items-center">
+<h3 class="font-medium">Market Distribution</h3>
+<button class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white">
+<i class="ri-more-2-fill"></i>
+</button>
+</div>
+<div id="doughnutChart" class="w-full h-64"></div>
+<div class="p-3 border-t border-slate-700">
+<div class="flex items-center justify-between text-xs">
+<span class="text-slate-400">Total Volume: $5.8T</span>
+<button class="text-primary hover:underline">View details</button>
+</div>
+</div>
+</div>
+<!-- Market Overview Widget -->
+<div class="widget">
+<div class="widget-header p-4 flex justify-between items-center">
+<h3 class="font-medium">Market Overview</h3>
+<button class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white">
+<i class="ri-more-2-fill"></i>
+</button>
+</div>
+<div class="p-2">
+<div class="overflow-x-auto scrollbar-hide">
+<table class="w-full">
+<thead>
+<tr class="text-xs text-slate-400">
+<th class="px-3 py-2 text-left">Symbol</th>
+<th class="px-3 py-2 text-right">Price</th>
+<th class="px-3 py-2 text-right">Change</th>
+<th class="px-3 py-2 text-right">Change %</th>
+</tr>
+</thead>
+<tbody>
+<tr class="text-sm border-t border-slate-700">
+<td class="px-3 py-3 text-left">EUR/USD</td>
+<td class="px-3 py-3 text-right font-medium">1.0845</td>
+<td class="px-3 py-3 text-right text-green-400">+0.0035</td>
+<td class="px-3 py-3 text-right text-green-400">+0.32%</td>
+</tr>
+<tr class="text-sm border-t border-slate-700">
+<td class="px-3 py-3 text-left">GBP/USD</td>
+<td class="px-3 py-3 text-right font-medium">1.2732</td>
+<td class="px-3 py-3 text-right text-green-400">+0.0023</td>
+<td class="px-3 py-3 text-right text-green-400">+0.18%</td>
+</tr>
+<tr class="text-sm border-t border-slate-700">
+<td class="px-3 py-3 text-left">USD/JPY</td>
+<td class="px-3 py-3 text-right font-medium">153.42</td>
+<td class="px-3 py-3 text-right text-red-400">-0.69</td>
+<td class="px-3 py-3 text-right text-red-400">-0.45%</td>
+</tr>
+<tr class="text-sm border-t border-slate-700">
+<td class="px-3 py-3 text-left">AUD/USD</td>
+<td class="px-3 py-3 text-right font-medium">0.6614</td>
+<td class="px-3 py-3 text-right text-green-400">+0.0028</td>
+<td class="px-3 py-3 text-right text-green-400">+0.42%</td>
+</tr>
+<tr class="text-sm border-t border-slate-700">
+<td class="px-3 py-3 text-left">USD/CAD</td>
+<td class="px-3 py-3 text-right font-medium">1.3642</td>
+<td class="px-3 py-3 text-right text-red-400">-0.0037</td>
+<td class="px-3 py-3 text-right text-red-400">-0.27%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Market Heatmap Widget -->
+<div class="widget">
+<div class="widget-header p-4 flex justify-between items-center">
+<h3 class="font-medium">Currency Strength</h3>
+<button class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white">
+<i class="ri-more-2-fill"></i>
+</button>
+</div>
+<div id="heatmapChart" class="w-full h-64"></div>
+<div class="p-3 border-t border-slate-700">
+<div class="flex items-center justify-between text-xs">
+<span class="text-slate-400">Last updated: 12:45 PM</span>
+<button class="text-primary hover:underline">View detailed analysis</button>
+</div>
+</div>
+</div>
+<!-- Economic Calendar Widget -->
+<div class="widget">
+<div class="widget-header p-4 flex justify-between items-center">
+<h3 class="font-medium">Economic Calendar</h3>
+<div class="flex items-center space-x-2">
+<span class="text-xs text-slate-400">June 20, 2025</span>
+<button class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white">
+<i class="ri-calendar-line"></i>
+</button>
+</div>
+</div>
+<div class="p-2">
+<div class="overflow-y-auto scrollbar-hide max-h-64">
+<div class="p-2 border-l-4 border-yellow-500 bg-yellow-500/5 rounded mb-2">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center space-x-2">
+<span class="text-xs font-medium">14:30</span>
+<span class="text-xs px-1.5 py-0.5 bg-yellow-500/20 text-yellow-400 rounded">Medium</span>
+</div>
+<h4 class="text-sm font-medium mt-1">US Initial Jobless Claims</h4>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-xs text-slate-400">Forecast</span>
+<span class="text-sm font-medium">235K</span>
+</div>
+</div>
+</div>
+<div class="p-2 border-l-4 border-red-500 bg-red-500/5 rounded mb-2">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center space-x-2">
+<span class="text-xs font-medium">15:00</span>
+<span class="text-xs px-1.5 py-0.5 bg-red-500/20 text-red-400 rounded">High</span>
+</div>
+<h4 class="text-sm font-medium mt-1">ECB Interest Rate Decision</h4>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-xs text-slate-400">Forecast</span>
+<span class="text-sm font-medium">3.75%</span>
+</div>
+</div>
+</div>
+<div class="p-2 border-l-4 border-green-500 bg-green-500/5 rounded mb-2">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center space-x-2">
+<span class="text-xs font-medium">15:30</span>
+<span class="text-xs px-1.5 py-0.5 bg-green-500/20 text-green-400 rounded">Low</span>
+</div>
+<h4 class="text-sm font-medium mt-1">US Philly Fed Manufacturing Index</h4>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-xs text-slate-400">Forecast</span>
+<span class="text-sm font-medium">10.2</span>
+</div>
+</div>
+</div>
+<div class="p-2 border-l-4 border-red-500 bg-red-500/5 rounded">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center space-x-2">
+<span class="text-xs font-medium">16:00</span>
+<span class="text-xs px-1.5 py-0.5 bg-red-500/20 text-red-400 rounded">High</span>
+</div>
+<h4 class="text-sm font-medium mt-1">ECB Press Conference</h4>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-xs text-slate-400">Duration</span>
+<span class="text-sm font-medium">45 min</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-3 border-t border-slate-700">
+<button class="w-full text-xs text-primary hover:underline">View full calendar</button>
+</div>
+</div>
+<!-- Technical Analysis Widget -->
+<div class="widget">
+<div class="widget-header p-4 flex justify-between items-center">
+<h3 class="font-medium">Technical Analysis</h3>
+<div class="flex items-center space-x-2">
+<button class="text-xs px-2 py-1 bg-slate-700 rounded tab-active !rounded-button">EUR/USD</button>
+<button class="text-xs px-2 py-1 text-slate-400 hover:text-white !rounded-button">GBP/USD</button>
+</div>
+</div>
+<div class="p-4">
+<div class="flex justify-between mb-4">
+<div class="text-center px-4 py-3 bg-slate-800 rounded-lg">
+<h4 class="text-xs text-slate-400 mb-1">1 Hour</h4>
+<div class="text-red-400 font-medium">SELL</div>
+</div>
+<div class="text-center px-4 py-3 bg-slate-800 rounded-lg">
+<h4 class="text-xs text-slate-400 mb-1">4 Hour</h4>
+<div class="text-red-400 font-medium">SELL</div>
+</div>
+<div class="text-center px-4 py-3 bg-slate-800 rounded-lg">
+<h4 class="text-xs text-slate-400 mb-1">Daily</h4>
+<div class="text-green-400 font-medium">BUY</div>
+</div>
+<div class="text-center px-4 py-3 bg-slate-800 rounded-lg">
+<h4 class="text-xs text-slate-400 mb-1">Weekly</h4>
+<div class="text-green-400 font-medium">BUY</div>
+</div>
+</div>
+<div id="technicalChart" class="w-full h-40"></div>
+</div>
+<div class="p-4 border-t border-slate-700">
+<div class="grid grid-cols-2 gap-3">
+<div>
+<h4 class="text-xs text-slate-400 mb-2">Moving Averages</h4>
+<div class="flex items-center">
+<div class="w-full bg-slate-700 rounded-full h-2">
+<div class="bg-green-400 h-2 rounded-full" style="width: 64%"></div>
+</div>
+<div class="ml-2 text-xs font-medium">
+<span class="text-green-400">7</span>/<span class="text-red-400">4</span>
+</div>
+</div>
+</div>
+<div>
+<h4 class="text-xs text-slate-400 mb-2">Technical Indicators</h4>
+<div class="flex items-center">
+<div class="w-full bg-slate-700 rounded-full h-2">
+<div class="bg-red-400 h-2 rounded-full" style="width: 36%"></div>
+</div>
+<div class="ml-2 text-xs font-medium">
+<span class="text-green-400">4</span>/<span class="text-red-400">7</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- News Feed Widget -->
+<div class="widget">
+<div class="widget-header p-4 flex justify-between items-center">
+<h3 class="font-medium">Market News</h3>
+<div class="flex items-center space-x-2">
+<button class="text-xs px-2 py-1 bg-slate-700 rounded tab-active !rounded-button">Forex</button>
+<button class="text-xs px-2 py-1 text-slate-400 hover:text-white !rounded-button">Global</button>
+</div>
+</div>
+<div class="p-2">
+<div class="overflow-y-auto scrollbar-hide max-h-80">
+<div class="p-3 border-b border-slate-700">
+<div class="flex items-start">
+<div class="flex-1">
+<h4 class="text-sm font-medium mb-1">ECB Expected to Hold Rates Steady Amid Inflation Concerns</h4>
+<p class="text-xs text-slate-400 mb-2 line-clamp-2">The European Central Bank is expected to maintain current interest rates in today's meeting as inflation remains above target despite recent economic data showing signs of cooling.</p>
+<div class="flex items-center text-xs text-slate-500">
+<span>Bloomberg</span>
+<span class="mx-2">•</span>
+<span>2 hours ago</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-3 border-b border-slate-700">
+<div class="flex items-start">
+<div class="flex-1">
+<h4 class="text-sm font-medium mb-1">Dollar Weakens as Fed Officials Signal Potential Rate Cut</h4>
+<p class="text-xs text-slate-400 mb-2 line-clamp-2">The US dollar declined against major currencies after Federal Reserve officials hinted at a possible rate cut in September, citing improving inflation metrics and labor market concerns.</p>
+<div class="flex items-center text-xs text-slate-500">
+<span>Reuters</span>
+<span class="mx-2">•</span>
+<span>4 hours ago</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-3 border-b border-slate-700">
+<div class="flex items-start">
+<div class="flex-1">
+<h4 class="text-sm font-medium mb-1">Bank of Japan Maintains Ultra-Loose Monetary Policy</h4>
+<p class="text-xs text-slate-400 mb-2 line-clamp-2">The Bank of Japan kept its ultra-loose monetary policy unchanged in its latest meeting, continuing to buck the global trend of monetary tightening despite the yen's recent weakness.</p>
+<div class="flex items-center text-xs text-slate-500">
+<span>Financial Times</span>
+<span class="mx-2">•</span>
+<span>6 hours ago</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-3">
+<div class="flex items-start">
+<div class="flex-1">
+<h4 class="text-sm font-medium mb-1">GBP/USD Rallies on Strong UK Retail Sales Data</h4>
+<p class="text-xs text-slate-400 mb-2 line-clamp-2">The British pound strengthened against the US dollar following better-than-expected UK retail sales data, which showed a 0.8% increase month-over-month, exceeding analyst forecasts of 0.3%.</p>
+<div class="flex items-center text-xs text-slate-500">
+<span>CNBC</span>
+<span class="mx-2">•</span>
+<span>8 hours ago</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-3 border-t border-slate-700">
+<button class="w-full text-xs text-primary hover:underline">View all news</button>
+</div>
+</div>
+<!-- Trading Signals Widget -->
+<div class="widget">
+<div class="widget-header p-4 flex justify-between items-center">
+<h3 class="font-medium">Trading Signals</h3>
+<button class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white">
+<i class="ri-refresh-line"></i>
+</button>
+</div>
+<div class="p-2">
+<div class="overflow-y-auto scrollbar-hide max-h-80">
+<div class="p-3 border-b border-slate-700">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center space-x-2">
+<span class="text-sm font-medium">EUR/USD</span>
+<span class="text-xs px-1.5 py-0.5 bg-green-500/20 text-green-400 rounded">BUY</span>
+</div>
+<div class="flex items-center space-x-2 mt-1">
+<span class="text-xs text-slate-400">Entry: 1.0835</span>
+<span class="text-xs text-slate-400">TP: 1.0890</span>
+<span class="text-xs text-slate-400">SL: 1.0805</span>
+</div>
+</div>
+<div class="text-xs text-slate-400">4H</div>
+</div>
+<div class="mt-2">
+<div class="text-xs text-slate-400">Signal strength</div>
+<div class="w-full bg-slate-700 rounded-full h-1.5 mt-1">
+<div class="bg-green-400 h-1.5 rounded-full" style="width: 75%"></div>
+</div>
+</div>
+</div>
+<div class="p-3 border-b border-slate-700">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center space-x-2">
+<span class="text-sm font-medium">GBP/JPY</span>
+<span class="text-xs px-1.5 py-0.5 bg-red-500/20 text-red-400 rounded">SELL</span>
+</div>
+<div class="flex items-center space-x-2 mt-1">
+<span class="text-xs text-slate-400">Entry: 195.40</span>
+<span class="text-xs text-slate-400">TP: 194.60</span>
+<span class="text-xs text-slate-400">SL: 195.80</span>
+</div>
+</div>
+<div class="text-xs text-slate-400">1D</div>
+</div>
+<div class="mt-2">
+<div class="text-xs text-slate-400">Signal strength</div>
+<div class="w-full bg-slate-700 rounded-full h-1.5 mt-1">
+<div class="bg-red-400 h-1.5 rounded-full" style="width: 85%"></div>
+</div>
+</div>
+</div>
+<div class="p-3">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center space-x-2">
+<span class="text-sm font-medium">USD/CAD</span>
+<span class="text-xs px-1.5 py-0.5 bg-red-500/20 text-red-400 rounded">SELL</span>
+</div>
+<div class="flex items-center space-x-2 mt-1">
+<span class="text-xs text-slate-400">Entry: 1.3650</span>
+<span class="text-xs text-slate-400">TP: 1.3580</span>
+<span class="text-xs text-slate-400">SL: 1.3685</span>
+</div>
+</div>
+<div class="text-xs text-slate-400">4H</div>
+</div>
+<div class="mt-2">
+<div class="text-xs text-slate-400">Signal strength</div>
+<div class="w-full bg-slate-700 rounded-full h-1.5 mt-1">
+<div class="bg-red-400 h-1.5 rounded-full" style="width: 65%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-3 border-t border-slate-700">
+<div class="flex items-center justify-between">
+<span class="text-xs text-slate-400">Last updated: 12:45 PM</span>
+<button class="text-xs text-primary hover:underline">View all signals</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script id="chartInitialization">
+document.addEventListener('DOMContentLoaded', function() {
+// Initialize new charts
+const radarChart = echarts.init(document.getElementById('radarChart'));
+const sankeyChart = echarts.init(document.getElementById('sankeyChart'));
+const doughnutChart = echarts.init(document.getElementById('doughnutChart'));
+// Radar Chart Configuration
+const radarOption = {
+  animation: false,
+  radar: {
+    indicator: [
+      { name: 'Volatility', max: 100 },
+      { name: 'Volume', max: 100 },
+      { name: 'Momentum', max: 100 },
+      { name: 'Trend', max: 100 },
+      { name: 'Liquidity', max: 100 }
+    ],
+    splitArea: {
+      areaStyle: {
+        color: ['rgba(87, 181, 231, 0.05)', 'rgba(87, 181, 231, 0.1)']
+      }
+    },
+    axisLine: {
+      lineStyle: {
+        color: '#475569'
+      }
+    },
+    splitLine: {
+      lineStyle: {
+        color: '#475569'
+      }
+    }
+  },
+  series: [{
+    type: 'radar',
+    data: [
+      {
+        value: [85, 65, 55, 80, 70],
+        name: 'EUR/USD',
+        lineStyle: {
+          color: 'rgba(87, 181, 231, 1)'
+        },
+        areaStyle: {
+          color: 'rgba(87, 181, 231, 0.2)'
         }
-
-        function switchChart(period) {
-            // Update active tab
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
-
-            // Update chart data with animation
-            priceChart.data.labels = chartData[period].labels;
-            priceChart.data.datasets[0].data = chartData[period].data;
-            priceChart.update('active');
+      },
+      {
+        value: [70, 75, 80, 65, 60],
+        name: 'GBP/USD',
+        lineStyle: {
+          color: 'rgba(141, 211, 199, 1)'
+        },
+        areaStyle: {
+          color: 'rgba(141, 211, 199, 0.2)'
         }
-
-        function animateItem(item) {
-            item.style.transform = 'scale(0.95)';
-            item.style.backgroundColor = 'rgba(102, 126, 234, 0.1)';
-            
-            setTimeout(() => {
-                item.style.transform = 'scale(1)';
-                item.style.backgroundColor = '';
-            }, 150);
-        }
-
-        function animateNews(item) {
-            item.style.transform = 'translateX(10px)';
-            item.style.backgroundColor = 'rgba(102, 126, 234, 0.1)';
-            
-            setTimeout(() => {
-                item.style.transform = 'translateX(0)';
-                item.style.backgroundColor = '';
-            }, 200);
-        }
-
-        // Simulate live price updates
-        function updateLivePrice() {
-            const priceElement = document.querySelector('.price');
-            const currentPrice = parseInt(priceElement.textContent.replace('$', '').replace(',', ''));
-            const change = (Math.random() - 0.5) * 100;
-            const newPrice = Math.max(30000, currentPrice + change);
-            
-            priceElement.textContent = '$' + Math.round(newPrice).toLocaleString();
-            
-            // Add pulse animation
-            priceElement.style.animation = 'none';
-            setTimeout(() => {
-                priceElement.style.animation = 'pulse 2s infinite';
-            }, 10);
-        }
-
-        // Initialize dashboard
-        document.addEventListener('DOMContentLoaded', function() {
-            initChart();
-            
-            // Start live updates
-            setInterval(updateLivePrice, 5000);
-            
-            // Add staggered animation to cards
-            const cards = document.querySelectorAll('.card');
-            cards.forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.1}s`;
-            });
-        });
-
-        // Add hover effects to metric cards
-        document.querySelectorAll('.metric-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                const fill = this.querySelector('.performance-fill');
-                const currentWidth = fill.style.width;
-                fill.style.width = '100%';
-                
-                setTimeout(() => {
-                    fill.style.width = currentWidth;
-                }, 300);
-            });
-        });
-    </script>
+      }
+    ]
+  }],
+  tooltip: {
+    trigger: 'item',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    textStyle: {
+      color: '#1e293b'
+    }
+  }
+};
+// Sankey Chart Configuration
+const sankeyOption = {
+  animation: false,
+  tooltip: {
+    trigger: 'item',
+    triggerOn: 'mousemove',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    textStyle: {
+      color: '#1e293b'
+    }
+  },
+  series: [{
+    type: 'sankey',
+    data: [
+      { name: 'USD' },
+      { name: 'EUR' },
+      { name: 'GBP' },
+      { name: 'Spot' },
+      { name: 'Forward' },
+      { name: 'Swap' }
+    ],
+    links: [
+      { source: 'USD', target: 'Spot', value: 5 },
+      { source: 'USD', target: 'Forward', value: 3 },
+      { source: 'USD', target: 'Swap', value: 8 },
+      { source: 'EUR', target: 'Spot', value: 4 },
+      { source: 'EUR', target: 'Forward', value: 2 },
+      { source: 'EUR', target: 'Swap', value: 6 },
+      { source: 'GBP', target: 'Spot', value: 3 },
+      { source: 'GBP', target: 'Forward', value: 1 },
+      { source: 'GBP', target: 'Swap', value: 4 }
+    ],
+    lineStyle: {
+      color: 'gradient',
+      curveness: 0.5
+    },
+    itemStyle: {
+      color: '#3b82f6',
+      borderColor: '#1e293b'
+    },
+    label: {
+      color: '#e2e8f0'
+    }
+  }]
+};
+// Doughnut Chart Configuration
+const doughnutOption = {
+  animation: false,
+  tooltip: {
+    trigger: 'item',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    textStyle: {
+      color: '#1e293b'
+    }
+  },
+  legend: {
+    orient: 'vertical',
+    right: 10,
+    top: 'center',
+    textStyle: {
+      color: '#e2e8f0'
+    }
+  },
+  series: [{
+    type: 'pie',
+    radius: ['40%', '70%'],
+    avoidLabelOverlap: false,
+    itemStyle: {
+      borderColor: '#1e293b',
+      borderWidth: 2
+    },
+    label: {
+      show: false
+    },
+    emphasis: {
+      label: {
+        show: true,
+        fontSize: '14',
+        fontWeight: 'bold'
+      }
+    },
+    labelLine: {
+      show: false
+    },
+    data: [
+      { value: 35, name: 'EUR/USD', itemStyle: { color: 'rgba(87, 181, 231, 1)' } },
+      { value: 25, name: 'GBP/USD', itemStyle: { color: 'rgba(141, 211, 199, 1)' } },
+      { value: 20, name: 'USD/JPY', itemStyle: { color: 'rgba(251, 191, 114, 1)' } },
+      { value: 15, name: 'AUD/USD', itemStyle: { color: 'rgba(252, 141, 98, 1)' } },
+      { value: 5, name: 'Others', itemStyle: { color: 'rgba(87, 181, 231, 0.5)' } }
+    ]
+  }]
+};
+// Set chart options
+radarChart.setOption(radarOption);
+sankeyChart.setOption(sankeyOption);
+doughnutChart.setOption(doughnutOption);
+// Main Chart
+const mainChart = echarts.init(document.getElementById('mainChart'));
+const mainChartOption = {
+animation: false,
+grid: {
+top: 20,
+right: 20,
+bottom: 30,
+left: 50
+},
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+borderColor: '#ccc',
+textStyle: {
+color: '#1e293b'
+}
+},
+xAxis: {
+type: 'category',
+data: Array.from({length: 24}, (_, i) => `${i}:00`),
+axisLine: {
+lineStyle: {
+color: '#475569'
+}
+},
+axisLabel: {
+color: '#94a3b8'
+},
+splitLine: {
+show: false
+}
+},
+yAxis: {
+type: 'value',
+axisLine: {
+lineStyle: {
+color: '#475569'
+}
+},
+axisLabel: {
+color: '#94a3b8'
+},
+splitLine: {
+lineStyle: {
+color: '#334155'
+}
+}
+},
+series: [
+{
+data: [1.0832, 1.0828, 1.0825, 1.0820, 1.0818, 1.0823, 1.0825, 1.0830, 1.0835, 1.0832, 1.0828, 1.0825, 1.0828, 1.0832, 1.0835, 1.0838, 1.0842, 1.0845, 1.0843, 1.0840, 1.0838, 1.0842, 1.0845, 1.0845],
+type: 'line',
+smooth: true,
+lineStyle: {
+color: 'rgba(87, 181, 231, 1)',
+width: 3
+},
+symbol: 'none',
+areaStyle: {
+color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+{
+offset: 0,
+color: 'rgba(87, 181, 231, 0.3)'
+},
+{
+offset: 1,
+color: 'rgba(87, 181, 231, 0.05)'
+}
+])
+}
+}
+]
+};
+mainChart.setOption(mainChartOption);
+// Heatmap Chart
+const heatmapChart = echarts.init(document.getElementById('heatmapChart'));
+const heatmapOption = {
+animation: false,
+tooltip: {
+trigger: 'item',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+textStyle: {
+color: '#1e293b'
+}
+},
+series: [
+{
+type: 'treemap',
+data: [
+{
+name: 'USD',
+value: 80,
+itemStyle: {
+color: 'rgba(87, 181, 231, 1)'
+}
+},
+{
+name: 'EUR',
+value: 65,
+itemStyle: {
+color: 'rgba(141, 211, 199, 1)'
+}
+},
+{
+name: 'JPY',
+value: 55,
+itemStyle: {
+color: 'rgba(251, 191, 114, 1)'
+}
+},
+{
+name: 'GBP',
+value: 50,
+itemStyle: {
+color: 'rgba(252, 141, 98, 1)'
+}
+},
+{
+name: 'CHF',
+value: 45,
+itemStyle: {
+color: 'rgba(87, 181, 231, 0.8)'
+}
+},
+{
+name: 'CAD',
+value: 40,
+itemStyle: {
+color: 'rgba(141, 211, 199, 0.8)'
+}
+},
+{
+name: 'AUD',
+value: 35,
+itemStyle: {
+color: 'rgba(251, 191, 114, 0.8)'
+}
+},
+{
+name: 'NZD',
+value: 30,
+itemStyle: {
+color: 'rgba(252, 141, 98, 0.8)'
+}
+}
+],
+label: {
+show: true,
+formatter: '{b}',
+color: '#fff'
+},
+breadcrumb: {
+show: false
+},
+roam: false,
+itemStyle: {
+borderColor: '#1e293b',
+borderWidth: 1,
+gapWidth: 2
+},
+emphasis: {
+itemStyle: {
+shadowBlur: 10,
+shadowColor: 'rgba(0, 0, 0, 0.5)'
+}
+}
+}
+]
+};
+heatmapChart.setOption(heatmapOption);
+// Technical Chart
+const technicalChart = echarts.init(document.getElementById('technicalChart'));
+const technicalOption = {
+animation: false,
+grid: {
+top: 10,
+right: 10,
+bottom: 20,
+left: 50
+},
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+textStyle: {
+color: '#1e293b'
+}
+},
+xAxis: {
+type: 'category',
+data: ['MA5', 'MA10', 'MA20', 'MA50', 'MA100', 'MA200', 'RSI', 'MACD', 'Stoch', 'BB', 'ATR'],
+axisLine: {
+lineStyle: {
+color: '#475569'
+}
+},
+axisLabel: {
+color: '#94a3b8',
+rotate: 45
+},
+splitLine: {
+show: false
+}
+},
+yAxis: {
+type: 'value',
+min: -100,
+max: 100,
+axisLine: {
+lineStyle: {
+color: '#475569'
+}
+},
+axisLabel: {
+color: '#94a3b8'
+},
+splitLine: {
+lineStyle: {
+color: '#334155'
+}
+}
+},
+series: [
+{
+data: [80, 60, 40, 20, -20, -40, 30, -10, -30, 50, 10],
+type: 'bar',
+itemStyle: {
+color: function(params) {
+return params.data >= 0 ? 'rgba(141, 211, 199, 1)' : 'rgba(252, 141, 98, 1)';
+},
+borderRadius: 4
+}
+}
+]
+};
+technicalChart.setOption(technicalOption);
+// Resize charts when window size changes
+window.addEventListener('resize', function() {
+mainChart.resize();
+heatmapChart.resize();
+technicalChart.resize();
+radarChart.resize();
+sankeyChart.resize();
+doughnutChart.resize();
+});
+});
+</script>
+<script id="customControls">
+document.addEventListener('DOMContentLoaded', function() {
+// Custom Checkbox
+const checkboxes = document.querySelectorAll('.custom-checkbox');
+checkboxes.forEach(checkbox => {
+checkbox.addEventListener('click', function() {
+const input = this.previousElementSibling;
+input.checked = !input.checked;
+this.classList.toggle('checked', input.checked);
+});
+});
+// Custom Radio
+const radios = document.querySelectorAll('.custom-radio');
+radios.forEach(radio => {
+radio.addEventListener('click', function() {
+const input = this.previousElementSibling;
+const name = input.getAttribute('name');
+document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+r.checked = false;
+r.nextElementSibling.classList.remove('checked');
+});
+input.checked = true;
+this.classList.add('checked');
+});
+});
+// Custom Switch
+const switches = document.querySelectorAll('.custom-switch');
+switches.forEach(switchEl => {
+switchEl.addEventListener('click', function() {
+const input = this.previousElementSibling;
+input.checked = !input.checked;
+this.classList.toggle('active', input.checked);
+});
+});
+});
+</script>
 </body>
 </html>
