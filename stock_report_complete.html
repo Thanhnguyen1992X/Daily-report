@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Cáo Phân Tích Thị Trường Chứng Khoán</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --dark-gradient: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --text-primary: #2c3e50;
+            --text-secondary: #7f8c8d;
+            --border-light: #ecf0f1;
+            --shadow-light: 0 4px 15px rgba(0,0,0,0.08);
+            --shadow-medium: 0 8px 25px rgba(0,0,0,0.12);
+            --shadow-heavy: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--primary-gradient);
+            padding: 20px;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .email-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: var(--shadow-heavy);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .email-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-gradient);
+            z-index: 10;
+        }
+
+        /* Premium Header */
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 50px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 100%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(-15deg);
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .company-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .company-logo {
+            width: 70px;
+            height: 70px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 800;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .brand-text h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-text .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .header-stats {
+            text-align: right;
+        }
+
+        .stat-item {
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+            display: block;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* Market Dashboard */
+        .market-dashboard {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 30px 40px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent-gradient);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .metric-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .trend-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 20px;
+            margin-top: 8px;
+        }
+
+        .trend-up {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--success-color);
+        }
+
+        .trend-down {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+        }
+
+        /* Premium Content Section */
+        .content {
+            padding: 40px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--accent-gradient);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Sector Analysis */
+        .sector-section {
+            margin-bottom: 50px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+        }
+
+        .sector-header {
+            background: var(--accent-gradient);
+            color: white;
+            padding: 25px 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+        }
+
+        .sector-header::after {
+            content: '';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 2px;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .sector-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .sector-info h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .sector-info p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .sector-performance {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-left: auto;
+        }
+
+        .performance-metric {
+            text-align: center;
+        }
+
+        .performance-value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .performance-label {
+            font-size: 11px;
+            opacity: 0.8;
+            text-transform: uppercase;
+        }
+
+        /* Advanced Stock Cards */
+        .stocks-container {
+            background: #f8f9fa;
+            padding: 30px;
+        }
+
+        .stocks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 20px;
+        }
+
+        .stock-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: var(--shadow-light);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .stock-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-gradient);
+        }
+
+        .stock-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .stock-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .stock-symbol {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .stock-name {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .stock-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-banking {
+            background: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+        }
+
+        .badge-realestate {
+            background: rgba(230, 126, 34, 0.1);
+            color: #e67e22;
+        }
+
+        .badge-consumer {
+            background: rgba(155, 89, 182, 0.1);
+            color: #9b59b6;
+        }
+
+        .badge-energy {
+            background: rgba(241, 196, 15, 0.1);
+            color: #f1c40f;
+        }
+
+        .badge-financial {
+            background: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+        }
+
+        .stock-metrics {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 20px;
+            align-items: end;
+        }
+
+        .price-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .stock-price {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--success-color);
+            line-height: 1;
+        }
+
+        .price-change {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .change-value {
+            font-size: 14px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .change-positive {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--success-color);
+        }
+
+        .change-negative {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+        }
+
+        .volume-info {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .stock-chart {
+            width: 80px;
+            height: 40px;
+            background: linear-gradient(45deg, rgba(79, 172, 254, 0.1), rgba(0, 242, 254, 0.1));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #4facfe;
+        }
+
+        /* Market Analysis Section */
+        .analysis-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            margin: 40px 0;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analysis-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 80%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(15deg);
+        }
+
+        .analysis-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .insight-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .insight-icon {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .insight-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .insight-text {
+            font-size: 14px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        /* Key Metrics Dashboard */
+        .metrics-dashboard {
+            background: #f8f9fa;
+            padding: 40px;
+            margin: 30px 0;
+            border-radius: 16px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .metric-card-advanced {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-light);
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card-advanced:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .metric-card-advanced::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-gradient);
+            border-radius: 16px 16px 0 0;
+        }
+
+        /* Professional Footer */
+        .footer {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 50px 40px 30px;
+            position: relative;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .footer-section h4 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #ecf0f1;
+        }
+
+        .footer-section p, .footer-section li {
+            font-size: 14px;
+            opacity: 0.8;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section a {
+            color: #3498db;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: #5dade2;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+            text-align: center;
+            opacity: 0.7;
+        }
+
+        /* Enhanced Disclaimer */
+        .disclaimer {
+            background: linear-gradient(135deg, #ecf0f1 0%, #bdc3c7 100%);
+            padding: 30px;
+            margin: 30px 40px;
+            border-radius: 16px;
+            border-left: 6px solid #3498db;
+            position: relative;
+        }
+
+        .disclaimer::before {
+            content: '⚠️';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+        }
+
+        .disclaimer h4 {
+            color: var(--text-primary);
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .disclaimer p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 20px;
+            }
+
+            .header-stats {
+                text-align: center;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .stocks-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .analysis-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+        }
+
+        /* Loading Animation */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slide-up {
+            animation: slideInUp 0.6s ease-out forwards;
+        }
+
+        /* Glassmorphism Effects */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <div class="header-content">
+                <div class="company-brand">
+                    <div class="company-logo">₫</div>
+                    <div class="brand-text">
+                        <h1>VIET CAPITAL</h1>
+                        <p class="subtitle">Investment Research</p>
+                    </div>
+                </div>
+
+                <div></div>
+
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Báo cáo ngày</span>
+                        <span class="stat-value" id="report-date">19/06/2025</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Cập nhật lúc</span>
+                        <span class="stat-value" id="update-time">16:30</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Phiên giao dịch</span>
+                        <span class="stat-value">T6 19/06/2025</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="market-dashboard">
+            <div class="dashboard-grid">
+                <div class="metric-card">
+                    <div class="metric-icon">📊</div>
+                    <div class="metric-value">30</div>
+                    <div class="metric-label">Cổ phiếu theo dõi</div>
+                    <div class="trend-indicator trend-up">
+                        ↗ +5 mã mới
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon">🏆</div>
+                    <div class="metric-value">85%</div>
+                    <div class="metric-label">Tỷ lệ tăng giá</div>
+                    <div class="trend-indicator trend-up">
+                        ↗ +12%
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon">💰</div>
+                    <div class="metric-value">2.5T+</div>
+                    <div class="metric-label">Tổng giá trị GD</div>
+                    <div class="trend-indicator trend-up">
+                        ↗ +18%
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon">📈</div>
+                    <div class="metric-value">+1.24%</div>
+                    <div class="metric-label">VN-Index hôm nay</div>
+                    <div class="trend-indicator trend-up">
+                        ↗ Tích cực
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="section-header">
+                <h2 class="section-title">PHÂN TÍCH DANH MỤC ĐẦU TƯ</h2>
+                <p class="section-subtitle">
+                    Báo cáo tổng hợp và phân tích chuyên sâu 30 cổ phiếu hàng đầu thị trường chứng khoán Việt Nam,
+                    được phân loại theo ngành nghề với các chỉ số hiệu suất chi tiết
+                </p>
+            </div>
+
+            <div class="sector-section">
+                <div class="sector-header">
+                    <div class="sector-icon">🏦</div>
+                    <div class="sector-info">
+                        <h3>NGÀNH NGÂN HÀNG</h3>
+                        <p>14 cổ phiếu • Vốn hóa: 1,850 tỷ VND</p>
+                    </div>
+                    <div class="sector-performance">
+                        <div class="performance-metric">
+                            <div class="performance-value">+0.68%</div>
+                            <div class="performance-label">TB Tăng trưởng</div>
+                        </div>
+                        <div class="performance-metric">
+                            <div class="performance-value">92%</div>
+                            <div class="performance-label">Tỷ lệ tăng</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stocks-container">
+                    <div class="stocks-grid">
+                        <div class="stock-card">
+                            <div class="stock-header">
+                                <div>
+                                    <div class="stock-symbol">ACB</div>
+                                    <div class="stock-name">Ngân hàng Á Châu</div>
+                                </div>
+                                <div class="stock-badge badge-banking">Banking</div>
+                            </div>
+                            <div class="stock-metrics">
+                                <div class="price-section">
+                                    <div class="stock-price">26,800 VND</div>
+                                    <div class="price-change">
+                                        <span class="change-value change-positive">+0.5%</span>
+                                        <span class="volume-info">Vol: 2.1M</span>
+                                    </div>
+                                </div>
+                                <div class="stock-chart">📊</div>
+                            </div>
+                        </div>
+
+                        <div class="stock-card">
+                            <div class="stock-header">
+                                <div>
+                                    <div class="stock-symbol">BID</div>
+                                    <div class="stock-name">Ngân hàng BIDV</div>
+                                </div>
+                                <div class="stock-badge badge-banking">Banking</div>
+                            </div>
+                            <div class="stock-metrics">
+                                <div class="price-section">
+                                    <div class="stock-price">48,200 VND</div>
+                                    <div class="price-change">
+                                        <span class="change-value change-positive">+0.3%</span>
+                                        <span class="volume-info">Vol: 3.8M</span>
+                                    </div>
+                                </div>
+                                <div class="stock-chart">📊</div>
+                            </div>
+                        </div>
+
+                        <div class="stock-card">
+                            <div class="stock-header">
+                                <div>
+                                    <div class="stock-symbol">CTG</div>
+                                    <div class="stock-name">Ngân hàng Công Thương VN</div>
+                                </div>
+                                <div class="stock-badge badge-banking">Banking</div>
+                            </div>
+                            <div class="stock-metrics">
+                                <div class="price-section">
+                                    <div class="stock-price">37,500 VND</div>
+                                    <div class="price-change">
+                                        <span class="change-value change-positive">+0.7%</span>
+                                        <span class="volume-info">Vol: 1.9M</span>
+                                    </div>
+                                </div>
+                                <div class="stock-chart">📊</div>
+                            </div>
+                        </div>
+
+                        <div class="stock-card">
+                            <div class="stock-header">
+                                <div>
+                                    <div class="stock-symbol">HDB</div>
+                                    <div class="stock-name">NH Phát triển TP.HCM</div>
+                                </div>
+                                <div class="stock-badge badge-banking">Banking</div>
+                            </div>
+                            <div class="stock-metrics">
+                                <div class="price-section">
+                                    <div class="stock-price">25,100 VND</div>
+                                    <div class="price-change">
+                                        <span class="change-value change-positive">+0.2%</span>
+                                        <span class="volume-info">Vol: 1.2M</span>
+                                    </div>
+                                </div>
+                                <div class="stock-chart">📊</div>
+                            </div>
+                        </div>
+
+                        <div class="stock-card">
+                            <div class="stock-header">
+                                <div>
+                                    <div class="stock-symbol">MBB</div>
+                                    <div class="stock-name">Ngân hàng Quân Đội</div>
+                                </div>
+                                <div class="stock-badge badge-banking">Banking</div>
+                            </div>
+                            <div class="stock-metrics">
+                                <div class="price-section">
+                                    <div class="stock-price">22,300 VND</div>
+                                    <div class="price-change">
+                                        <span class="change-value change-positive">+0.4%</span>
+                                        <span class="volume-info">Vol: 2.5M</span>
+                                    </div>
+                                </div>
+                                <div class="stock-chart">📊</div>
+                            </div>
+                        </div>
+
+                        <div class="stock-card">
+                            <div class="stock-header">
+                                <div>
+                                    <div class="stock-symbol">STB</div>
+                                    <div class="stock-name">Ngân hàng Sacombank</div>
+                                </div>
+                                <div class="stock-badge badge-banking">Banking</div>
+                            </div>
+                            <div class="stock-metrics">
+                                <div class="price-section">
+                                    <div class="stock-price">31,000 VND</div>
+                                    <div class="price-change">
+                                        <span class="change-value change-positive">+0.6%</span>
+                                        <span class="volume-info">Vol: 2.0M</span>
+                                    </div>
+                                </div>
+                                <div class="stock-chart">📊</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sector-section">
+                <div class="sector-header">
+                    <div class="sector-icon">🏢</div>
+                    <div class="sector-info">
+                        <h3>NGÀNH BẤT ĐỘNG SẢN</h3>
+                        <p>8 cổ phiếu • Vốn hóa: 980 tỷ VND</p>
+                    </div>
+                    <div class="sector-performance">
+                        <div class="performance-metric">
+                            <div class="performance-value">-0.15%</div>
+                            <div class="performance-label">TB Tăng trưởng</div>
+                        </div>
+                        <div class="performance-metric">
+                            <div class="performance-value">45%</div>
+                            <div class="performance-label">Tỷ lệ tăng</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stocks-container">
+                    <div class="stocks-grid">
+                        <div class="stock-card">
+                            <div class="stock-header">
+                                <div>
+                                    <div class="stock-symbol">VHM</div>
+                                    <div class="stock-name">Tập đoàn Vinhomes</div>
+                                </div>
+                                <div class="stock-badge badge-realestate">Real Estate</div>
+                            </div>
+                            <div class="stock-metrics">
+                                <div class="price-section">
+                                    <div class="stock-price">45,500 VND</div>
+                                    <div class="price-change">
+                                        <span class="change-value change-positive">+0.1%</span>
+                                        <span class="volume-info">Vol: 1.5M</span>
+                                    </div>
+                                </div>
+                                <div class="stock-chart">📊</div>
+                            </div>
+                        </div>
+
+                        <div class="stock-card">
+                            <div class="stock-header">
+                                <div>
+                                    <div class="stock-symbol">NVL</div>
+                                    <div class="stock-name">Tập đoàn Novaland</div>
+                                </div>
+                                <div class="stock-badge badge-realestate">Real Estate</div>
+                            </div>
+                            <div class="stock-metrics">
+                                <div class="price-section">
+                                    <div class="stock-price">18,700 VND</div>
+                                    <div class="price-change">
+                                        <span class="change-value change-negative">-0.8%</span>
+                                        <span class="volume-info">Vol: 4.2M</span>
+                                    </div>
+                                </div>
+                                <div class="stock-chart">📊</div>
+                            </div>
+                        </div>
+
+                        <div class="stock-card">
+                            <div class="stock-header">
+                                <div>
+                                    <div class="stock-symbol">DXG</div>
+                                    <div class="stock-name">Tập đoàn Đất Xanh</div>
+                                </div>
+                                <div class="stock-badge badge-realestate">Real Estate</div>
+                            </div>
+                            <div class="stock-metrics">
+                                <div class="price-section">
+                                    <div class="stock-price">17,200 VND</div>
+                                    <div class="price-change">
+                                        <span class="change-value change-positive">+0.4%</span>
+                                        <span class="volume-info">Vol: 2.8M</span>
+                                    </div>
+                                </div>
+                                <div class="stock-chart">📊</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sector-section">
+                <div class="sector-header">
+                    <div class="sector-icon">🛒</div>
+                    <div class="sector-info">
+                        <h3>NGÀNH HÀNG TIÊU DÙNG</h3>
+                        <p>5 cổ phiếu • Vốn hóa: 720 tỷ VND</p>
+                    </div>
+                    <div class="sector-performance">
+                        <div class="performance-metric">
+                            <div class="performance-value">+0.35%</div>
+                            <div class="performance-label">TB Tăng trưởng</div>
+                        </div>
+                        <div class="performance-metric">
+                            <div class="performance-value">70%</div>
+                            <div class="performance-label">Tỷ lệ tăng</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stocks-container">
+                    <div class="stocks-grid">
+                        <div class="stock-card">
+                            <div class="stock-header">
+                                <div>
+                                    <div class="stock-symbol">MWG</div>
+                                    <div class="stock-name">Thế Giới Di Động</div>
+                                </div>
+                                <div class="stock-badge badge-consumer">Consumer</div>
+                            </div>
+                            <div class="stock-metrics">
+                                <div class="price-section">
+                                    <div class="stock-price">58,900 VND</div>
+                                    <div class="price-change">
+                                        <span class="change-value change-positive">+1.2%</span>
+                                        <span class="volume-info">Vol: 1.1M</span>
+                                    </div>
+                                </div>
+                                <div class="stock-chart">📊</div>
+                            </div>
+                        </div>
+
+                        <div class="stock-card">
+                            <div class="stock-header">
+                                <div>
+                                    <div class="stock-symbol">PNJ</div>
+                                    <div class="stock-name">Vàng Bạc Đá Quý Phú Nhuận</div>
+                                </div>
+                                <div class="stock-badge badge-consumer">Consumer</div>
+                            </div>
+                            <div class="stock-metrics">
+                                <div class="price-section">
+                                    <div class="stock-price">92,100 VND</div>
+                                    <div class="price-change">
+                                        <span class="change-value change-positive">+0.9%</span>
+                                        <span class="volume-info">Vol: 0.8M</span>
+                                    </div>
+                                </div>
+                                <div class="stock-chart">📊</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sector-section">
+                <div class="sector-header">
+                    <div class="sector-icon">⚡</div>
+                    <div class="sector-info">
+                        <h3>NGÀNH NĂNG LƯỢNG</h3>
+                        <p>3 cổ phiếu • Vốn hóa: 450 tỷ VND</p>
+                    </div>
+                    <div class="sector-performance">
+                        <div class="performance-metric">
+                            <div class="performance-value">+0.50%</div>
+                            <div class="performance-label">TB Tăng trưởng</div>
+                        </div>
+                        <div class="performance-metric">
+                            <div class="performance-value">80%</div>
+                            <div class="performance-label">Tỷ lệ tăng</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stocks-container">
+                    <div class="stocks-grid">
+                        <div class="stock-card">
+                            <div class="stock-header">
+                                <div>
+                                    <div class="stock-symbol">GAS</div>
+                                    <div class="stock-name">Tổng Công ty Khí Việt Nam</div>
+                                </div>
+                                <div class="stock-badge badge-energy">Energy</div>
+                            </div>
+                            <div class="stock-metrics">
+                                <div class="price-section">
+                                    <div class="stock-price">75,000 VND</div>
+                                    <div class="price-change">
+                                        <span class="change-value change-positive">+0.6%</span>
+                                        <span class="volume-info">Vol: 0.5M</span>
+                                    </div>
+                                </div>
+                                <div class="stock-chart">📊</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sector-section">
+                <div class="sector-header">
+                    <div class="sector-icon">📈</div>
+                    <div class="sector-info">
+                        <h3>NGÀNH DỊCH VỤ TÀI CHÍNH</h3>
+                        <p>3 cổ phiếu • Vốn hóa: 300 tỷ VND</p>
+                    </div>
+                    <div class="sector-performance">
+                        <div class="performance-metric">
+                            <div class="performance-value">+0.95%</div>
+                            <div class="performance-label">TB Tăng trưởng</div>
+                        </div>
+                        <div class="performance-metric">
+                            <div class="performance-value">100%</div>
+                            <div class="performance-label">Tỷ lệ tăng</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stocks-container">
+                    <div class="stocks-grid">
+                        <div class="stock-card">
+                            <div class="stock-header">
+                                <div>
+                                    <div class="stock-symbol">SSI</div>
+                                    <div class="stock-name">CTCP Chứng khoán SSI</div>
+                                </div>
+                                <div class="stock-badge badge-financial">Financial</div>
+                            </div>
+                            <div class="stock-metrics">
+                                <div class="price-section">
+                                    <div class="stock-price">32,500 VND</div>
+                                    <div class="price-change">
+                                        <span class="change-value change-positive">+1.5%</span>
+                                        <span class="volume-info">Vol: 5.1M</span>
+                                    </div>
+                                </div>
+                                <div class="stock-chart">📊</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="analysis-section">
+                <div class="section-header">
+                    <h2 class="section-title">PHÂN TÍCH THỊ TRƯỜNG CHUNG</h2>
+                    <p class="section-subtitle">
+                        Đánh giá tổng quan về diễn biến thị trường, các yếu tố vĩ mô và dự báo xu hướng
+                    </p>
+                </div>
+                <div class="analysis-content">
+                    <div class="analysis-grid">
+                        <div class="insight-card glass-effect">
+                            <div class="insight-icon">🌐</div>
+                            <div class="insight-title">Yếu tố Vĩ mô</div>
+                            <div class="insight-text">
+                                Kinh tế vĩ mô Việt Nam tiếp tục cho thấy sự ổn định với tăng trưởng GDP quý 2 vượt kỳ vọng. Lãi suất duy trì ở mức thấp, hỗ trợ tích cực cho kênh đầu tư chứng khoán. Tuy nhiên, áp lực lạm phát cần được theo dõi chặt chẽ.
+                            </div>
+                        </div>
+                        <div class="insight-card glass-effect">
+                            <div class="insight-icon">🚀</div>
+                            <div class="insight-title">Xu hướng Thị trường</div>
+                            <div class="insight-text">
+                                VN-Index dự kiến sẽ tiếp tục đà tăng trong ngắn hạn, được dẫn dắt bởi nhóm cổ phiếu ngân hàng và bất động sản có nền tảng tốt. Dòng tiền ngoại đang có dấu hiệu quay trở lại, tạo động lực cho thị trường.
+                            </div>
+                        </div>
+                        <div class="insight-card glass-effect">
+                            <div class="insight-icon">🛡️</div>
+                            <div class="insight-title">Khuyến nghị Đầu tư</div>
+                            <div class="insight-text">
+                                Ưu tiên các cổ phiếu có KQKD quý 2 dự kiến khả quan, đặc biệt là nhóm ngân hàng với NIM ổn định và tăng trưởng tín dụng tốt. Cân nhắc giải ngân dần vào nhóm bất động sản đã điều chỉnh sâu và có tiềm năng phục hồi.
+                            </div>
+                        </div>
+                        <div class="insight-card glass-effect">
+                            <div class="insight-icon">🔍</div>
+                            <div class="insight-title">Rủi ro Tiềm ẩn</div>
+                            <div class="insight-text">
+                                Rủi ro lạm phát gia tăng và động thái của FED về lãi suất có thể ảnh hưởng đến tâm lý nhà đầu tư. Biến động giá hàng hóa toàn cầu cũng là yếu tố cần lưu ý.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metrics-dashboard">
+                <div class="section-header">
+                    <h2 class="section-title">CHỈ SỐ CHÍNH TOÀN THỊ TRƯỜNG</h2>
+                    <p class="section-subtitle">
+                        Tổng hợp các chỉ số quan trọng, cung cấp cái nhìn tổng thể về sức khỏe thị trường
+                    </p>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-card-advanced">
+                        <div class="metric-icon">💵</div>
+                        <div class="metric-value">1,280.50</div>
+                        <div class="metric-label">VN-Index</div>
+                        <div class="trend-indicator trend-up">
+                            +15.70 (+1.24%)
+                        </div>
+                    </div>
+                    <div class="metric-card-advanced">
+                        <div class="metric-icon">💰</div>
+                        <div class="metric-value">25,600 tỷ VND</div>
+                        <div class="metric-label">Tổng khối lượng khớp lệnh</div>
+                        <div class="trend-indicator trend-up">
+                            ↗ Cao kỷ lục
+                        </div>
+                    </div>
+                    <div class="metric-card-advanced">
+                        <div class="metric-icon"> foreigners</div>
+                        <div class="metric-value">+850 tỷ VND</div>
+                        <div class="metric-label">Giao dịch khối ngoại</div>
+                        <div class="trend-indicator trend-up">
+                            ↗ Mua ròng
+                        </div>
+                    </div>
+                    <div class="metric-card-advanced">
+                        <div class="metric-icon">📉</div>
+                        <div class="metric-value">10:1</div>
+                        <div class="metric-label">Tỷ lệ cổ phiếu tăng/giảm</div>
+                        <div class="trend-indicator trend-up">
+                            ↗ Phân hóa tốt
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>VIET CAPITAL</h4>
+                    <p>
+                        Cung cấp các báo cáo phân tích thị trường chuyên sâu và đáng tin cậy. 
+                        Nguồn thông tin quý giá cho mọi nhà đầu tư.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h4>Liên hệ</h4>
+                    <ul>
+                        <li>Email: <a href="mailto:info@vietcapital.com">info@vietcapital.com</a></li>
+                        <li>Điện thoại: +84 24 1234 5678</li>
+                        <li>Địa chỉ: Tầng 10, Tòa nhà Tài Chính, Hà Nội, Việt Nam</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Tài nguyên khác</h4>
+                    <ul>
+                        <li><a href="#">Báo cáo hàng ngày</a></li>
+                        <li><a href="#">Phân tích chuyên đề</a></li>
+                        <li><a href="#">Khóa học đầu tư</a></li>
+                        <li><a href="#">Về chúng tôi</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; 2025 Viet Capital. Mọi quyền được bảo lưu.
+            </div>
+        </div>
+
+        <div class="disclaimer">
+            <h4>Tuyên bố Miễn trừ Trách nhiệm</h4>
+            <p>
+                Báo cáo này chỉ mang tính chất tham khảo và không phải là lời khuyên đầu tư. 
+                Viet Capital không chịu trách nhiệm cho bất kỳ quyết định đầu tư nào dựa trên thông tin trong báo cáo này. 
+                Nhà đầu tư nên tìm kiếm lời khuyên chuyên nghiệp trước khi đưa ra bất kỳ quyết định đầu tư nào.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
