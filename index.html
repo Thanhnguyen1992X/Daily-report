@@ -92,7 +92,7 @@ top: 2px;
 left: 2px;
 width: 16px;
 height: 16px;
-background: #e2e8f0;
+background: #3b82f6;
 border-radius: 50%;
 transition: all 0.3s;
 }
@@ -188,7 +188,7 @@ top: 0;
 left: 0;
 height: 16px;
 width: 16px;
-background-color: #fff;
+background-color: #3b82f6;
 border: 1px solid #ccc;
 border-radius: 4px;
 }
@@ -230,7 +230,7 @@ top: 0;
 left: 0;
 height: 16px;
 width: 16px;
-background-color: #fff;
+background-color: #3b82f6;
 border: 1px solid #ccc;
 border-radius: 50%;
 }
@@ -258,7 +258,7 @@ background: #1e40af;
 -webkit-appearance: none;
 width: 100%;
 height: 4px;
-background: #e5e7eb;
+background:#3b82f6;
 border-radius: 5px;
 outline: none;
 }
@@ -285,7 +285,7 @@ border-bottom: 2px solid #1e40af;
 .progress-bar {
 height: 6px;
 border-radius: 3px;
-background-color: #e5e7eb;
+background-color:#3b82f6;
 overflow: hidden;
 }
 .progress-fill {
@@ -924,453 +924,6 @@ JD
 </div>
 </div>
 </div>
-</main>
-<script id="chartInitialization">
-document.addEventListener('DOMContentLoaded', function() {
-// Initialize new charts
-const radarChart = echarts.init(document.getElementById('radarChart'));
-const sankeyChart = echarts.init(document.getElementById('sankeyChart'));
-const doughnutChart = echarts.init(document.getElementById('doughnutChart'));
-// Radar Chart Configuration
-const radarOption = {
-  animation: false,
-  radar: {
-    indicator: [
-      { name: 'Volatility', max: 100 },
-      { name: 'Volume', max: 100 },
-      { name: 'Momentum', max: 100 },
-      { name: 'Trend', max: 100 },
-      { name: 'Liquidity', max: 100 }
-    ],
-    splitArea: {
-      areaStyle: {
-        color: ['rgba(87, 181, 231, 0.05)', 'rgba(87, 181, 231, 0.1)']
-      }
-    },
-    axisLine: {
-      lineStyle: {
-        color: '#475569'
-      }
-    },
-    splitLine: {
-      lineStyle: {
-        color: '#475569'
-      }
-    }
-  },
-  series: [{
-    type: 'radar',
-    data: [
-      {
-        value: [85, 65, 55, 80, 70],
-        name: 'EUR/USD',
-        lineStyle: {
-          color: 'rgba(87, 181, 231, 1)'
-        },
-        areaStyle: {
-          color: 'rgba(87, 181, 231, 0.2)'
-        }
-      },
-      {
-        value: [70, 75, 80, 65, 60],
-        name: 'GBP/USD',
-        lineStyle: {
-          color: 'rgba(141, 211, 199, 1)'
-        },
-        areaStyle: {
-          color: 'rgba(141, 211, 199, 0.2)'
-        }
-      }
-    ]
-  }],
-  tooltip: {
-    trigger: 'item',
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    textStyle: {
-      color: '#1e293b'
-    }
-  }
-};
-// Sankey Chart Configuration
-const sankeyOption = {
-  animation: false,
-  tooltip: {
-    trigger: 'item',
-    triggerOn: 'mousemove',
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    textStyle: {
-      color: '#1e293b'
-    }
-  },
-  series: [{
-    type: 'sankey',
-    data: [
-      { name: 'USD' },
-      { name: 'EUR' },
-      { name: 'GBP' },
-      { name: 'Spot' },
-      { name: 'Forward' },
-      { name: 'Swap' }
-    ],
-    links: [
-      { source: 'USD', target: 'Spot', value: 5 },
-      { source: 'USD', target: 'Forward', value: 3 },
-      { source: 'USD', target: 'Swap', value: 8 },
-      { source: 'EUR', target: 'Spot', value: 4 },
-      { source: 'EUR', target: 'Forward', value: 2 },
-      { source: 'EUR', target: 'Swap', value: 6 },
-      { source: 'GBP', target: 'Spot', value: 3 },
-      { source: 'GBP', target: 'Forward', value: 1 },
-      { source: 'GBP', target: 'Swap', value: 4 }
-    ],
-    lineStyle: {
-      color: 'gradient',
-      curveness: 0.5
-    },
-    itemStyle: {
-      color: '#3b82f6',
-      borderColor: '#1e293b'
-    },
-    label: {
-      color: '#e2e8f0'
-    }
-  }]
-};
-// Doughnut Chart Configuration
-const doughnutOption = {
-  animation: false,
-  tooltip: {
-    trigger: 'item',
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    textStyle: {
-      color: '#1e293b'
-    }
-  },
-  legend: {
-    orient: 'vertical',
-    right: 10,
-    top: 'center',
-    textStyle: {
-      color: '#e2e8f0'
-    }
-  },
-  series: [{
-    type: 'pie',
-    radius: ['40%', '70%'],
-    avoidLabelOverlap: false,
-    itemStyle: {
-      borderColor: '#1e293b',
-      borderWidth: 2
-    },
-    label: {
-      show: false
-    },
-    emphasis: {
-      label: {
-        show: true,
-        fontSize: '14',
-        fontWeight: 'bold'
-      }
-    },
-    labelLine: {
-      show: false
-    },
-    data: [
-      { value: 35, name: 'EUR/USD', itemStyle: { color: 'rgba(87, 181, 231, 1)' } },
-      { value: 25, name: 'GBP/USD', itemStyle: { color: 'rgba(141, 211, 199, 1)' } },
-      { value: 20, name: 'USD/JPY', itemStyle: { color: 'rgba(251, 191, 114, 1)' } },
-      { value: 15, name: 'AUD/USD', itemStyle: { color: 'rgba(252, 141, 98, 1)' } },
-      { value: 5, name: 'Others', itemStyle: { color: 'rgba(87, 181, 231, 0.5)' } }
-    ]
-  }]
-};
-// Set chart options
-radarChart.setOption(radarOption);
-sankeyChart.setOption(sankeyOption);
-doughnutChart.setOption(doughnutOption);
-// Main Chart
-const mainChart = echarts.init(document.getElementById('mainChart'));
-const mainChartOption = {
-animation: false,
-grid: {
-top: 20,
-right: 20,
-bottom: 30,
-left: 50
-},
-tooltip: {
-trigger: 'axis',
-backgroundColor: 'rgba(255, 255, 255, 0.8)',
-borderColor: '#ccc',
-textStyle: {
-color: '#1e293b'
-}
-},
-xAxis: {
-type: 'category',
-data: Array.from({length: 24}, (_, i) => `${i}:00`),
-axisLine: {
-lineStyle: {
-color: '#475569'
-}
-},
-axisLabel: {
-color: '#94a3b8'
-},
-splitLine: {
-show: false
-}
-},
-yAxis: {
-type: 'value',
-axisLine: {
-lineStyle: {
-color: '#475569'
-}
-},
-axisLabel: {
-color: '#94a3b8'
-},
-splitLine: {
-lineStyle: {
-color: '#334155'
-}
-}
-},
-series: [
-{
-data: [1.0832, 1.0828, 1.0825, 1.0820, 1.0818, 1.0823, 1.0825, 1.0830, 1.0835, 1.0832, 1.0828, 1.0825, 1.0828, 1.0832, 1.0835, 1.0838, 1.0842, 1.0845, 1.0843, 1.0840, 1.0838, 1.0842, 1.0845, 1.0845],
-type: 'line',
-smooth: true,
-lineStyle: {
-color: 'rgba(87, 181, 231, 1)',
-width: 3
-},
-symbol: 'none',
-areaStyle: {
-color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-{
-offset: 0,
-color: 'rgba(87, 181, 231, 0.3)'
-},
-{
-offset: 1,
-color: 'rgba(87, 181, 231, 0.05)'
-}
-])
-}
-}
-]
-};
-mainChart.setOption(mainChartOption);
-// Heatmap Chart
-const heatmapChart = echarts.init(document.getElementById('heatmapChart'));
-const heatmapOption = {
-animation: false,
-tooltip: {
-trigger: 'item',
-backgroundColor: 'rgba(255, 255, 255, 0.8)',
-textStyle: {
-color: '#1e293b'
-}
-},
-series: [
-{
-type: 'treemap',
-data: [
-{
-name: 'USD',
-value: 80,
-itemStyle: {
-color: 'rgba(87, 181, 231, 1)'
-}
-},
-{
-name: 'EUR',
-value: 65,
-itemStyle: {
-color: 'rgba(141, 211, 199, 1)'
-}
-},
-{
-name: 'JPY',
-value: 55,
-itemStyle: {
-color: 'rgba(251, 191, 114, 1)'
-}
-},
-{
-name: 'GBP',
-value: 50,
-itemStyle: {
-color: 'rgba(252, 141, 98, 1)'
-}
-},
-{
-name: 'CHF',
-value: 45,
-itemStyle: {
-color: 'rgba(87, 181, 231, 0.8)'
-}
-},
-{
-name: 'CAD',
-value: 40,
-itemStyle: {
-color: 'rgba(141, 211, 199, 0.8)'
-}
-},
-{
-name: 'AUD',
-value: 35,
-itemStyle: {
-color: 'rgba(251, 191, 114, 0.8)'
-}
-},
-{
-name: 'NZD',
-value: 30,
-itemStyle: {
-color: 'rgba(252, 141, 98, 0.8)'
-}
-}
-],
-label: {
-show: true,
-formatter: '{b}',
-color: '#fff'
-},
-breadcrumb: {
-show: false
-},
-roam: false,
-itemStyle: {
-borderColor: '#1e293b',
-borderWidth: 1,
-gapWidth: 2
-},
-emphasis: {
-itemStyle: {
-shadowBlur: 10,
-shadowColor: 'rgba(0, 0, 0, 0.5)'
-}
-}
-}
-]
-};
-heatmapChart.setOption(heatmapOption);
-// Technical Chart
-const technicalChart = echarts.init(document.getElementById('technicalChart'));
-const technicalOption = {
-animation: false,
-grid: {
-top: 10,
-right: 10,
-bottom: 20,
-left: 50
-},
-tooltip: {
-trigger: 'axis',
-backgroundColor: 'rgba(255, 255, 255, 0.8)',
-textStyle: {
-color: '#1e293b'
-}
-},
-xAxis: {
-type: 'category',
-data: ['MA5', 'MA10', 'MA20', 'MA50', 'MA100', 'MA200', 'RSI', 'MACD', 'Stoch', 'BB', 'ATR'],
-axisLine: {
-lineStyle: {
-color: '#475569'
-}
-},
-axisLabel: {
-color: '#94a3b8',
-rotate: 45
-},
-splitLine: {
-show: false
-}
-},
-yAxis: {
-type: 'value',
-min: -100,
-max: 100,
-axisLine: {
-lineStyle: {
-color: '#475569'
-}
-},
-axisLabel: {
-color: '#94a3b8'
-},
-splitLine: {
-lineStyle: {
-color: '#334155'
-}
-}
-},
-series: [
-{
-data: [80, 60, 40, 20, -20, -40, 30, -10, -30, 50, 10],
-type: 'bar',
-itemStyle: {
-color: function(params) {
-return params.data >= 0 ? 'rgba(141, 211, 199, 1)' : 'rgba(252, 141, 98, 1)';
-},
-borderRadius: 4
-}
-}
-]
-};
-technicalChart.setOption(technicalOption);
-// Resize charts when window size changes
-window.addEventListener('resize', function() {
-mainChart.resize();
-heatmapChart.resize();
-technicalChart.resize();
-radarChart.resize();
-sankeyChart.resize();
-doughnutChart.resize();
-});
-});
-</script>
-<script id="customControls">
-document.addEventListener('DOMContentLoaded', function() {
-// Custom Checkbox
-const checkboxes = document.querySelectorAll('.custom-checkbox');
-checkboxes.forEach(checkbox => {
-checkbox.addEventListener('click', function() {
-const input = this.previousElementSibling;
-input.checked = !input.checked;
-this.classList.toggle('checked', input.checked);
-});
-});
-// Custom Radio
-const radios = document.querySelectorAll('.custom-radio');
-radios.forEach(radio => {
-radio.addEventListener('click', function() {
-const input = this.previousElementSibling;
-const name = input.getAttribute('name');
-document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
-r.checked = false;
-r.nextElementSibling.classList.remove('checked');
-});
-input.checked = true;
-this.classList.add('checked');
-});
-});
-// Custom Switch
-const switches = document.querySelectorAll('.custom-switch');
-switches.forEach(switchEl => {
-switchEl.addEventListener('click', function() {
-const input = this.previousElementSibling;
-input.checked = !input.checked;
-this.classList.toggle('active', input.checked);
-});
-});
-});
-</script>
 <div class="min-h-screen flex flex-col">
 <!-- Header -->
 <header class="bg-white border-b border-gray-200">
@@ -3817,5 +3370,453 @@ color: 'rgba(141, 211, 199, 1)'
 currencyFlowChart.setOption(currencyFlowChartOption);
 });
 </script>
+</main>
+<script id="chartInitialization">
+document.addEventListener('DOMContentLoaded', function() {
+// Initialize new charts
+const radarChart = echarts.init(document.getElementById('radarChart'));
+const sankeyChart = echarts.init(document.getElementById('sankeyChart'));
+const doughnutChart = echarts.init(document.getElementById('doughnutChart'));
+// Radar Chart Configuration
+const radarOption = {
+  animation: false,
+  radar: {
+    indicator: [
+      { name: 'Volatility', max: 100 },
+      { name: 'Volume', max: 100 },
+      { name: 'Momentum', max: 100 },
+      { name: 'Trend', max: 100 },
+      { name: 'Liquidity', max: 100 }
+    ],
+    splitArea: {
+      areaStyle: {
+        color: ['rgba(87, 181, 231, 0.05)', 'rgba(87, 181, 231, 0.1)']
+      }
+    },
+    axisLine: {
+      lineStyle: {
+        color: '#475569'
+      }
+    },
+    splitLine: {
+      lineStyle: {
+        color: '#475569'
+      }
+    }
+  },
+  series: [{
+    type: 'radar',
+    data: [
+      {
+        value: [85, 65, 55, 80, 70],
+        name: 'EUR/USD',
+        lineStyle: {
+          color: 'rgba(87, 181, 231, 1)'
+        },
+        areaStyle: {
+          color: 'rgba(87, 181, 231, 0.2)'
+        }
+      },
+      {
+        value: [70, 75, 80, 65, 60],
+        name: 'GBP/USD',
+        lineStyle: {
+          color: 'rgba(141, 211, 199, 1)'
+        },
+        areaStyle: {
+          color: 'rgba(141, 211, 199, 0.2)'
+        }
+      }
+    ]
+  }],
+  tooltip: {
+    trigger: 'item',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    textStyle: {
+      color: '#1e293b'
+    }
+  }
+};
+// Sankey Chart Configuration
+const sankeyOption = {
+  animation: false,
+  tooltip: {
+    trigger: 'item',
+    triggerOn: 'mousemove',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    textStyle: {
+      color: '#1e293b'
+    }
+  },
+  series: [{
+    type: 'sankey',
+    data: [
+      { name: 'USD' },
+      { name: 'EUR' },
+      { name: 'GBP' },
+      { name: 'Spot' },
+      { name: 'Forward' },
+      { name: 'Swap' }
+    ],
+    links: [
+      { source: 'USD', target: 'Spot', value: 5 },
+      { source: 'USD', target: 'Forward', value: 3 },
+      { source: 'USD', target: 'Swap', value: 8 },
+      { source: 'EUR', target: 'Spot', value: 4 },
+      { source: 'EUR', target: 'Forward', value: 2 },
+      { source: 'EUR', target: 'Swap', value: 6 },
+      { source: 'GBP', target: 'Spot', value: 3 },
+      { source: 'GBP', target: 'Forward', value: 1 },
+      { source: 'GBP', target: 'Swap', value: 4 }
+    ],
+    lineStyle: {
+      color: 'gradient',
+      curveness: 0.5
+    },
+    itemStyle: {
+      color: '#3b82f6',
+      borderColor: '#1e293b'
+    },
+    label: {
+      color: '#e2e8f0'
+    }
+  }]
+};
+// Doughnut Chart Configuration
+const doughnutOption = {
+  animation: false,
+  tooltip: {
+    trigger: 'item',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    textStyle: {
+      color: '#1e293b'
+    }
+  },
+  legend: {
+    orient: 'vertical',
+    right: 10,
+    top: 'center',
+    textStyle: {
+      color: '#e2e8f0'
+    }
+  },
+  series: [{
+    type: 'pie',
+    radius: ['40%', '70%'],
+    avoidLabelOverlap: false,
+    itemStyle: {
+      borderColor: '#1e293b',
+      borderWidth: 2
+    },
+    label: {
+      show: false
+    },
+    emphasis: {
+      label: {
+        show: true,
+        fontSize: '14',
+        fontWeight: 'bold'
+      }
+    },
+    labelLine: {
+      show: false
+    },
+    data: [
+      { value: 35, name: 'EUR/USD', itemStyle: { color: 'rgba(87, 181, 231, 1)' } },
+      { value: 25, name: 'GBP/USD', itemStyle: { color: 'rgba(141, 211, 199, 1)' } },
+      { value: 20, name: 'USD/JPY', itemStyle: { color: 'rgba(251, 191, 114, 1)' } },
+      { value: 15, name: 'AUD/USD', itemStyle: { color: 'rgba(252, 141, 98, 1)' } },
+      { value: 5, name: 'Others', itemStyle: { color: 'rgba(87, 181, 231, 0.5)' } }
+    ]
+  }]
+};
+// Set chart options
+radarChart.setOption(radarOption);
+sankeyChart.setOption(sankeyOption);
+doughnutChart.setOption(doughnutOption);
+// Main Chart
+const mainChart = echarts.init(document.getElementById('mainChart'));
+const mainChartOption = {
+animation: false,
+grid: {
+top: 20,
+right: 20,
+bottom: 30,
+left: 50
+},
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+borderColor: '#ccc',
+textStyle: {
+color: '#1e293b'
+}
+},
+xAxis: {
+type: 'category',
+data: Array.from({length: 24}, (_, i) => `${i}:00`),
+axisLine: {
+lineStyle: {
+color: '#475569'
+}
+},
+axisLabel: {
+color: '#94a3b8'
+},
+splitLine: {
+show: false
+}
+},
+yAxis: {
+type: 'value',
+axisLine: {
+lineStyle: {
+color: '#475569'
+}
+},
+axisLabel: {
+color: '#94a3b8'
+},
+splitLine: {
+lineStyle: {
+color: '#334155'
+}
+}
+},
+series: [
+{
+data: [1.0832, 1.0828, 1.0825, 1.0820, 1.0818, 1.0823, 1.0825, 1.0830, 1.0835, 1.0832, 1.0828, 1.0825, 1.0828, 1.0832, 1.0835, 1.0838, 1.0842, 1.0845, 1.0843, 1.0840, 1.0838, 1.0842, 1.0845, 1.0845],
+type: 'line',
+smooth: true,
+lineStyle: {
+color: 'rgba(87, 181, 231, 1)',
+width: 3
+},
+symbol: 'none',
+areaStyle: {
+color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+{
+offset: 0,
+color: 'rgba(87, 181, 231, 0.3)'
+},
+{
+offset: 1,
+color: 'rgba(87, 181, 231, 0.05)'
+}
+])
+}
+}
+]
+};
+mainChart.setOption(mainChartOption);
+// Heatmap Chart
+const heatmapChart = echarts.init(document.getElementById('heatmapChart'));
+const heatmapOption = {
+animation: false,
+tooltip: {
+trigger: 'item',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+textStyle: {
+color: '#1e293b'
+}
+},
+series: [
+{
+type: 'treemap',
+data: [
+{
+name: 'USD',
+value: 80,
+itemStyle: {
+color: 'rgba(87, 181, 231, 1)'
+}
+},
+{
+name: 'EUR',
+value: 65,
+itemStyle: {
+color: 'rgba(141, 211, 199, 1)'
+}
+},
+{
+name: 'JPY',
+value: 55,
+itemStyle: {
+color: 'rgba(251, 191, 114, 1)'
+}
+},
+{
+name: 'GBP',
+value: 50,
+itemStyle: {
+color: 'rgba(252, 141, 98, 1)'
+}
+},
+{
+name: 'CHF',
+value: 45,
+itemStyle: {
+color: 'rgba(87, 181, 231, 0.8)'
+}
+},
+{
+name: 'CAD',
+value: 40,
+itemStyle: {
+color: 'rgba(141, 211, 199, 0.8)'
+}
+},
+{
+name: 'AUD',
+value: 35,
+itemStyle: {
+color: 'rgba(251, 191, 114, 0.8)'
+}
+},
+{
+name: 'NZD',
+value: 30,
+itemStyle: {
+color: 'rgba(252, 141, 98, 0.8)'
+}
+}
+],
+label: {
+show: true,
+formatter: '{b}',
+color: '#fff'
+},
+breadcrumb: {
+show: false
+},
+roam: false,
+itemStyle: {
+borderColor: '#1e293b',
+borderWidth: 1,
+gapWidth: 2
+},
+emphasis: {
+itemStyle: {
+shadowBlur: 10,
+shadowColor: 'rgba(0, 0, 0, 0.5)'
+}
+}
+}
+]
+};
+heatmapChart.setOption(heatmapOption);
+// Technical Chart
+const technicalChart = echarts.init(document.getElementById('technicalChart'));
+const technicalOption = {
+animation: false,
+grid: {
+top: 10,
+right: 10,
+bottom: 20,
+left: 50
+},
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+textStyle: {
+color: '#1e293b'
+}
+},
+xAxis: {
+type: 'category',
+data: ['MA5', 'MA10', 'MA20', 'MA50', 'MA100', 'MA200', 'RSI', 'MACD', 'Stoch', 'BB', 'ATR'],
+axisLine: {
+lineStyle: {
+color: '#475569'
+}
+},
+axisLabel: {
+color: '#94a3b8',
+rotate: 45
+},
+splitLine: {
+show: false
+}
+},
+yAxis: {
+type: 'value',
+min: -100,
+max: 100,
+axisLine: {
+lineStyle: {
+color: '#475569'
+}
+},
+axisLabel: {
+color: '#94a3b8'
+},
+splitLine: {
+lineStyle: {
+color: '#334155'
+}
+}
+},
+series: [
+{
+data: [80, 60, 40, 20, -20, -40, 30, -10, -30, 50, 10],
+type: 'bar',
+itemStyle: {
+color: function(params) {
+return params.data >= 0 ? 'rgba(141, 211, 199, 1)' : 'rgba(252, 141, 98, 1)';
+},
+borderRadius: 4
+}
+}
+]
+};
+technicalChart.setOption(technicalOption);
+// Resize charts when window size changes
+window.addEventListener('resize', function() {
+mainChart.resize();
+heatmapChart.resize();
+technicalChart.resize();
+radarChart.resize();
+sankeyChart.resize();
+doughnutChart.resize();
+});
+});
+</script>
+<script id="customControls">
+document.addEventListener('DOMContentLoaded', function() {
+// Custom Checkbox
+const checkboxes = document.querySelectorAll('.custom-checkbox');
+checkboxes.forEach(checkbox => {
+checkbox.addEventListener('click', function() {
+const input = this.previousElementSibling;
+input.checked = !input.checked;
+this.classList.toggle('checked', input.checked);
+});
+});
+// Custom Radio
+const radios = document.querySelectorAll('.custom-radio');
+radios.forEach(radio => {
+radio.addEventListener('click', function() {
+const input = this.previousElementSibling;
+const name = input.getAttribute('name');
+document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+r.checked = false;
+r.nextElementSibling.classList.remove('checked');
+});
+input.checked = true;
+this.classList.add('checked');
+});
+});
+// Custom Switch
+const switches = document.querySelectorAll('.custom-switch');
+switches.forEach(switchEl => {
+switchEl.addEventListener('click', function() {
+const input = this.previousElementSibling;
+input.checked = !input.checked;
+this.classList.toggle('active', input.checked);
+});
+});
+});
+</script>
+
 </body>
 </html>
