@@ -1,0 +1,2640 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phân Tích Tài Chính</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#1e40af',secondary:'#0ea5e9'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body {
+font-family: 'Inter', sans-serif;
+background-color: #f8fafc;
+}
+.chart-container {
+width: 100%;
+height: 100%;
+min-height: 200px;
+}
+.custom-switch {
+position: relative;
+display: inline-block;
+width: 40px;
+height: 20px;
+}
+.custom-switch input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+.slider {
+position: absolute;
+cursor: pointer;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background-color: #ccc;
+transition: .4s;
+border-radius: 34px;
+}
+.slider:before {
+position: absolute;
+content: "";
+height: 16px;
+width: 16px;
+left: 2px;
+bottom: 2px;
+background-color: white;
+transition: .4s;
+border-radius: 50%;
+}
+input:checked + .slider {
+background-color: #1e40af;
+}
+input:checked + .slider:before {
+transform: translateX(20px);
+}
+.custom-checkbox {
+position: relative;
+display: inline-block;
+width: 16px;
+height: 16px;
+}
+.custom-checkbox input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+.checkmark {
+position: absolute;
+top: 0;
+left: 0;
+height: 16px;
+width: 16px;
+background-color: #fff;
+border: 1px solid #ccc;
+border-radius: 4px;
+}
+.custom-checkbox input:checked ~ .checkmark {
+background-color: #1e40af;
+border-color: #1e40af;
+}
+.checkmark:after {
+content: "";
+position: absolute;
+display: none;
+}
+.custom-checkbox input:checked ~ .checkmark:after {
+display: block;
+}
+.custom-checkbox .checkmark:after {
+left: 5px;
+top: 2px;
+width: 5px;
+height: 9px;
+border: solid white;
+border-width: 0 2px 2px 0;
+transform: rotate(45deg);
+}
+.custom-radio {
+position: relative;
+display: inline-block;
+width: 16px;
+height: 16px;
+}
+.custom-radio input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+.radiomark {
+position: absolute;
+top: 0;
+left: 0;
+height: 16px;
+width: 16px;
+background-color: #fff;
+border: 1px solid #ccc;
+border-radius: 50%;
+}
+.custom-radio input:checked ~ .radiomark {
+background-color: #fff;
+border-color: #1e40af;
+}
+.radiomark:after {
+content: "";
+position: absolute;
+display: none;
+}
+.custom-radio input:checked ~ .radiomark:after {
+display: block;
+}
+.custom-radio .radiomark:after {
+top: 3px;
+left: 3px;
+width: 8px;
+height: 8px;
+border-radius: 50%;
+background: #1e40af;
+}
+.custom-range {
+-webkit-appearance: none;
+width: 100%;
+height: 4px;
+background: #e5e7eb;
+border-radius: 5px;
+outline: none;
+}
+.custom-range::-webkit-slider-thumb {
+-webkit-appearance: none;
+appearance: none;
+width: 16px;
+height: 16px;
+background: #1e40af;
+border-radius: 50%;
+cursor: pointer;
+}
+.custom-range::-moz-range-thumb {
+width: 16px;
+height: 16px;
+background: #1e40af;
+border-radius: 50%;
+cursor: pointer;
+}
+.tab-active {
+color: #1e40af;
+border-bottom: 2px solid #1e40af;
+}
+.progress-bar {
+height: 6px;
+border-radius: 3px;
+background-color: #e5e7eb;
+overflow: hidden;
+}
+.progress-fill {
+height: 100%;
+border-radius: 3px;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+</style>
+</head>
+<body>
+<div class="min-h-screen flex flex-col">
+<!-- Header -->
+<header class="bg-white border-b border-gray-200">
+<div class="flex items-center justify-between px-4 py-2">
+<div class="flex items-center space-x-4">
+<div class="font-['Pacifico'] text-primary text-2xl">logo</div>
+<div class="hidden md:flex space-x-1">
+<button class="px-3 py-1 text-sm text-gray-700 hover:text-primary">Tổng quan</button>
+<button class="px-3 py-1 text-sm text-gray-700 hover:text-primary">Cổ phiếu</button>
+<button class="px-3 py-1 text-sm text-gray-700 hover:text-primary">Tiền điện tử</button>
+<button class="px-3 py-1 text-sm text-gray-700 hover:text-primary">Forex</button>
+<button class="px-3 py-1 text-sm text-primary font-medium">Phân tích & Nghiên cứu</button>
+<button class="px-3 py-1 text-sm text-gray-700 hover:text-primary">Tin tức</button>
+<button class="px-3 py-1 text-sm text-gray-700 hover:text-primary">Cảnh báo</button>
+</div>
+</div>
+<div class="flex items-center space-x-3">
+<div class="relative">
+<input type="text" placeholder="Tìm kiếm cổ phiếu, crypto, forex..." class="pl-8 pr-4 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary w-56">
+<div class="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 flex items-center justify-center text-gray-400">
+<i class="ri-search-line"></i>
+</div>
+</div>
+<div class="flex items-center space-x-2">
+<div class="px-3 py-1 bg-gray-50 rounded-full flex items-center">
+<span class="text-xs font-medium text-gray-600">BTC/USD</span>
+<span class="ml-2 text-xs text-green-500">+2.45%</span>
+</div>
+<div class="px-3 py-1 bg-gray-50 rounded-full flex items-center">
+<span class="text-xs font-medium text-gray-600">EUR/USD</span>
+<span class="ml-2 text-xs text-red-500">-0.12%</span>
+</div>
+</div>
+<button class="p-1 text-gray-500 hover:text-primary">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-notification-3-line"></i>
+</div>
+</button>
+<button class="p-1 text-gray-500 hover:text-primary">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-settings-3-line"></i>
+</div>
+</button>
+<div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
+<i class="ri-user-line"></i>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 p-4">
+<!-- Stock Header -->
+<div class="bg-white rounded shadow p-4 mb-4">
+<div class="flex flex-col md:flex-row justify-between">
+<div>
+<div class="flex items-center space-x-2">
+<h1 class="text-xl font-bold">Militex Commercial Joint Stock Bank</h1>
+<span class="text-gray-500 text-sm">MIL</span>
+<span class="bg-blue-100 text-primary text-xs px-2 py-0.5 rounded-full">HOSE</span>
+</div>
+<div class="mt-2 text-2xl font-bold flex items-center">
+<span>₫ 19,250</span>
+<span class="ml-2 text-green-500 text-base flex items-center">
+<i class="ri-arrow-up-line"></i> 850 (4.62%)
+</span>
+</div>
+<div class="text-xs text-gray-500 mt-1">Cập nhật: 20/06/2025 15:30 | Giá mở cửa: ₫ 18,400 | Giá đóng cửa hôm qua: ₫ 18,400</div>
+</div>
+<div class="mt-4 md:mt-0 flex flex-wrap gap-2">
+<button class="!rounded-button bg-primary text-white px-3 py-1.5 text-sm font-medium whitespace-nowrap flex items-center">
+<div class="w-4 h-4 flex items-center justify-center mr-1">
+<i class="ri-add-line"></i>
+</div>
+Thêm vào danh mục
+</button>
+<button class="!rounded-button border border-gray-300 px-3 py-1.5 text-sm font-medium whitespace-nowrap flex items-center">
+<div class="w-4 h-4 flex items-center justify-center mr-1">
+<i class="ri-alarm-line"></i>
+</div>
+Đặt cảnh báo
+</button>
+<button class="!rounded-button border border-gray-300 px-3 py-1.5 text-sm font-medium whitespace-nowrap flex items-center">
+<div class="w-4 h-4 flex items-center justify-center mr-1">
+<i class="ri-share-line"></i>
+</div>
+Chia sẻ
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+<div class="chart-container" id="priceChart"></div>
+<div class="chart-container" id="cryptoChart"></div>
+<div class="chart-container" id="forexChart"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+<div class="chart-container" id="radarChart"></div>
+<div class="chart-container" id="marketHeatmap"></div>
+</div>
+</div>
+<!-- Main Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+<!-- Left Column -->
+<div class="lg:col-span-2 space-y-4">
+<!-- Business Description -->
+<div class="bg-white rounded shadow">
+<div class="p-3 border-b border-gray-200 flex justify-between items-center">
+<h2 class="font-semibold">Mô tả doanh nghiệp</h2>
+<button class="text-gray-500 hover:text-primary">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-more-2-fill"></i>
+</div>
+</button>
+</div>
+<div class="p-4">
+<p class="text-sm text-gray-700">
+Militex Commercial Joint Stock Bank (MIL) là một trong những ngân hàng thương mại hàng đầu tại Việt Nam, cung cấp các dịch vụ tài chính toàn diện cho cá nhân và doanh nghiệp. Ngân hàng có mạng lưới chi nhánh rộng khắp với hơn 200 điểm giao dịch trên toàn quốc và đang mở rộng hoạt động sang các thị trường Đông Nam Á. MIL nổi bật với các giải pháp ngân hàng số và chiến lược tập trung vào phân khúc khách hàng doanh nghiệp vừa và nhỏ (SME) cùng khách hàng cá nhân có thu nhập cao.
+</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+<div>
+<h3 class="text-sm font-medium text-gray-700">Thông tin chính</h3>
+<ul class="mt-2 space-y-1 text-xs">
+<li class="flex">
+<span class="w-24 text-gray-500">Ngành:</span>
+<span class="font-medium">Ngân hàng</span>
+</li>
+<li class="flex">
+<span class="w-24 text-gray-500">Thành lập:</span>
+<span class="font-medium">1995</span>
+</li>
+<li class="flex">
+<span class="w-24 text-gray-500">Trụ sở chính:</span>
+<span class="font-medium">Hà Nội, Việt Nam</span>
+</li>
+<li class="flex">
+<span class="w-24 text-gray-500">Nhân viên:</span>
+<span class="font-medium">12,450+</span>
+</li>
+<li class="flex">
+<span class="w-24 text-gray-500">CEO:</span>
+<span class="font-medium">Nguyễn Văn Tuấn</span>
+</li>
+</ul>
+</div>
+<div>
+<h3 class="text-sm font-medium text-gray-700">Sản phẩm & Dịch vụ</h3>
+<ul class="mt-2 space-y-1 text-xs">
+<li class="flex items-center">
+<div class="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+<span>Ngân hàng bán lẻ</span>
+</li>
+<li class="flex items-center">
+<div class="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+<span>Ngân hàng doanh nghiệp</span>
+</li>
+<li class="flex items-center">
+<div class="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+<span>Ngân hàng đầu tư</span>
+</li>
+<li class="flex items-center">
+<div class="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+<span>Quản lý tài sản</span>
+</li>
+<li class="flex items-center">
+<div class="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+<span>Bảo hiểm</span>
+</li>
+</ul>
+</div>
+<div>
+<h3 class="text-sm font-medium text-gray-700">Thị trường hoạt động</h3>
+<ul class="mt-2 space-y-1 text-xs">
+<li class="flex items-center">
+<div class="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+<span>Việt Nam (chính)</span>
+</li>
+<li class="flex items-center">
+<div class="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+<span>Singapore</span>
+</li>
+<li class="flex items-center">
+<div class="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+<span>Malaysia</span>
+</li>
+<li class="flex items-center">
+<div class="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+<span>Campuchia</span>
+</li>
+<li class="flex items-center">
+<div class="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+<span>Myanmar</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<!-- Strength Analysis -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Personal Strength -->
+<div class="bg-white rounded shadow">
+<div class="p-3 border-b border-gray-200 flex justify-between items-center">
+<h2 class="font-semibold">Điểm mạnh</h2>
+<div class="flex items-center">
+<span class="text-xs text-gray-500 mr-2">Cập nhật: 18/06/2025</span>
+<button class="text-gray-500 hover:text-primary">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-more-2-fill"></i>
+</div>
+</button>
+</div>
+</div>
+<div class="p-4">
+<div class="space-y-3">
+<div>
+<div class="flex justify-between items-center mb-1">
+<span class="text-xs font-medium">Tăng trưởng doanh thu</span>
+<span class="text-xs font-medium">85%</span>
+</div>
+<div class="progress-bar">
+<div class="progress-fill bg-green-500" style="width: 85%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-center mb-1">
+<span class="text-xs font-medium">Biên lợi nhuận</span>
+<span class="text-xs font-medium">72%</span>
+</div>
+<div class="progress-bar">
+<div class="progress-fill bg-green-500" style="width: 72%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-center mb-1">
+<span class="text-xs font-medium">ROE</span>
+<span class="text-xs font-medium">68%</span>
+</div>
+<div class="progress-bar">
+<div class="progress-fill bg-green-500" style="width: 68%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-center mb-1">
+<span class="text-xs font-medium">Chất lượng tài sản</span>
+<span class="text-xs font-medium">76%</span>
+</div>
+<div class="progress-bar">
+<div class="progress-fill bg-green-500" style="width: 76%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-center mb-1">
+<span class="text-xs font-medium">Thanh khoản</span>
+<span class="text-xs font-medium">82%</span>
+</div>
+<div class="progress-bar">
+<div class="progress-fill bg-green-500" style="width: 82%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-center mb-1">
+<span class="text-xs font-medium">Quản trị rủi ro</span>
+<span class="text-xs font-medium">79%</span>
+</div>
+<div class="progress-bar">
+<div class="progress-fill bg-green-500" style="width: 79%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-center mb-1">
+<span class="text-xs font-medium">Chuyển đổi số</span>
+<span class="text-xs font-medium">90%</span>
+</div>
+<div class="progress-bar">
+<div class="progress-fill bg-green-500" style="width: 90%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Profitability Rank -->
+<div class="bg-white rounded shadow">
+<div class="p-3 border-b border-gray-200 flex justify-between items-center">
+<h2 class="font-semibold">Xếp hạng khả năng sinh lời</h2>
+<div class="flex items-center">
+<span class="text-xs text-gray-500 mr-2">So với ngành</span>
+<button class="text-gray-500 hover:text-primary">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-more-2-fill"></i>
+</div>
+</button>
+</div>
+</div>
+<div class="p-4">
+<div class="space-y-3">
+<div class="flex items-center">
+<span class="text-xs w-28">ROE</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-4 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 85%"></div>
+</div>
+<span class="ml-2 text-xs font-medium">22.5%</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-28">ROA</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-4 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 75%"></div>
+</div>
+<span class="ml-2 text-xs font-medium">1.8%</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-28">NIM</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-4 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 80%"></div>
+</div>
+<span class="ml-2 text-xs font-medium">4.2%</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-28">CIR</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-4 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 70%"></div>
+</div>
+<span class="ml-2 text-xs font-medium">35.8%</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-28">CASA</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-4 rounded-sm overflow-hidden">
+<div class="bg-yellow-500 h-full" style="width: 60%"></div>
+</div>
+<span class="ml-2 text-xs font-medium">22.4%</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-28">Tỷ lệ nợ xấu</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-4 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 82%"></div>
+</div>
+<span class="ml-2 text-xs font-medium">1.2%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- EPS Value Rank -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- EPS Value Rank -->
+<div class="bg-white rounded shadow">
+<div class="p-3 border-b border-gray-200 flex justify-between items-center">
+<h2 class="font-semibold">Xếp hạng EPS</h2>
+<div class="flex items-center">
+<span class="text-xs text-gray-500 mr-2">So với Top 10 ngân hàng</span>
+<button class="text-gray-500 hover:text-primary">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-more-2-fill"></i>
+</div>
+</button>
+</div>
+</div>
+<div class="p-4">
+<div class="space-y-3">
+<div class="flex items-center">
+<span class="text-xs w-28">VCB</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-4 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 95%"></div>
+</div>
+<span class="ml-2 text-xs font-medium">7,250</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-28">TCB</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-4 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 92%"></div>
+</div>
+<span class="ml-2 text-xs font-medium">6,820</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-28">MBB</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-4 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 88%"></div>
+</div>
+<span class="ml-2 text-xs font-medium">6,450</span>
+</div>
+</div>
+<div class="flex items-center font-medium">
+<span class="text-xs w-28 text-primary">MIL</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-4 rounded-sm overflow-hidden">
+<div class="bg-primary h-full" style="width: 85%"></div>
+</div>
+<span class="ml-2 text-xs font-medium text-primary">6,120</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-28">ACB</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-4 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 82%"></div>
+</div>
+<span class="ml-2 text-xs font-medium">5,980</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-28">VPB</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-4 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 78%"></div>
+</div>
+<span class="ml-2 text-xs font-medium">5,640</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-28">HDB</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-4 rounded-sm overflow-hidden">
+<div class="bg-yellow-500 h-full" style="width: 65%"></div>
+</div>
+<span class="ml-2 text-xs font-medium">4,850</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Warning Signs -->
+<div class="bg-white rounded shadow">
+<div class="p-3 border-b border-gray-200 flex justify-between items-center">
+<h2 class="font-semibold">Tín hiệu cảnh báo</h2>
+<button class="text-gray-500 hover:text-primary">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-more-2-fill"></i>
+</div>
+</button>
+</div>
+<div class="p-4">
+<div class="bg-red-50 border border-red-200 rounded p-3 mb-4">
+<p class="text-xs text-red-700">Giá cổ phiếu đã tăng 15% trong 5 phiên gần nhất, có thể xuất hiện áp lực chốt lời trong ngắn hạn.</p>
+</div>
+<div class="space-y-3">
+<div class="flex items-center">
+<div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+<span class="text-xs flex-1">RSI (14) đang ở vùng quá mua</span>
+<span class="text-xs font-medium">72.5</span>
+</div>
+<div class="flex items-center">
+<div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+<span class="text-xs flex-1">Khối ngoại bán ròng 5 phiên liên tiếp</span>
+<span class="text-xs font-medium">-125 tỷ</span>
+</div>
+<div class="flex items-center">
+<div class="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
+<span class="text-xs flex-1">P/E cao hơn trung bình ngành</span>
+<span class="text-xs font-medium">+12%</span>
+</div>
+<div class="flex items-center">
+<div class="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
+<span class="text-xs flex-1">Tỷ lệ dự phòng/nợ xấu giảm nhẹ</span>
+<span class="text-xs font-medium">-2.5%</span>
+</div>
+<div class="flex items-center">
+<div class="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
+<span class="text-xs flex-1">Biến động giá cao hơn trung bình 20 phiên</span>
+<span class="text-xs font-medium">+35%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Momentum Rank -->
+<div class="bg-white rounded shadow">
+<div class="p-3 border-b border-gray-200 flex justify-between items-center">
+<h2 class="font-semibold">Xếp hạng động lượng</h2>
+<div class="flex items-center">
+<span class="text-xs text-gray-500 mr-2">Cập nhật: 20/06/2025</span>
+<button class="text-gray-500 hover:text-primary">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-more-2-fill"></i>
+</div>
+</button>
+</div>
+</div>
+<div class="p-4">
+<div class="grid grid-cols-2 gap-4">
+<div>
+<h3 class="text-xs font-medium mb-2">Chỉ báo kỹ thuật</h3>
+<div class="space-y-2">
+<div class="flex items-center">
+<span class="text-xs w-24">RSI (14)</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-3 rounded-sm overflow-hidden">
+<div class="bg-red-500 h-full" style="width: 72%"></div>
+</div>
+<span class="ml-2 text-xs">72.5</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-24">MACD</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-3 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 65%"></div>
+</div>
+<span class="ml-2 text-xs">+0.35</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-24">Stochastic</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-3 rounded-sm overflow-hidden">
+<div class="bg-red-500 h-full" style="width: 85%"></div>
+</div>
+<span class="ml-2 text-xs">85.2</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-24">ADX</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-3 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 32%"></div>
+</div>
+<span class="ml-2 text-xs">32.4</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-24">CCI</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-3 rounded-sm overflow-hidden">
+<div class="bg-red-500 h-full" style="width: 78%"></div>
+</div>
+<span class="ml-2 text-xs">+156.8</span>
+</div>
+</div>
+</div>
+</div>
+<div>
+<h3 class="text-xs font-medium mb-2">Biến động giá</h3>
+<div class="space-y-2">
+<div class="flex items-center">
+<span class="text-xs w-24">1 tuần</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-3 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 65%"></div>
+</div>
+<span class="ml-2 text-xs text-green-600">+6.5%</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-24">1 tháng</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-3 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 85%"></div>
+</div>
+<span class="ml-2 text-xs text-green-600">+12.8%</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-24">3 tháng</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-3 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 92%"></div>
+</div>
+<span class="ml-2 text-xs text-green-600">+18.5%</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-24">6 tháng</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-3 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 78%"></div>
+</div>
+<span class="ml-2 text-xs text-green-600">+24.2%</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-24">1 năm</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-3 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 95%"></div>
+</div>
+<span class="ml-2 text-xs text-green-600">+42.8%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Dividend & Yield Rank -->
+<div class="bg-white rounded shadow">
+<div class="p-3 border-b border-gray-200 flex justify-between items-center">
+<h2 class="font-semibold">Xếp hạng cổ tức & Lợi suất</h2>
+<button class="text-gray-500 hover:text-primary">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-more-2-fill"></i>
+</div>
+</button>
+</div>
+<div class="p-4">
+<div class="grid grid-cols-2 gap-4">
+<div>
+<h3 class="text-xs font-medium mb-2">Cổ tức tiền mặt</h3>
+<div class="space-y-2">
+<div class="flex items-center">
+<span class="text-xs w-16">2024E</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-3 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 85%"></div>
+</div>
+<span class="ml-2 text-xs">1,500đ</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-16">2023</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-3 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 75%"></div>
+</div>
+<span class="ml-2 text-xs">1,200đ</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-16">2022</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-3 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 65%"></div>
+</div>
+<span class="ml-2 text-xs">1,000đ</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-16">2021</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-3 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 55%"></div>
+</div>
+<span class="ml-2 text-xs">800đ</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-16">2020</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-3 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 45%"></div>
+</div>
+<span class="ml-2 text-xs">600đ</span>
+</div>
+</div>
+</div>
+</div>
+<div>
+<h3 class="text-xs font-medium mb-2">Lợi suất cổ tức</h3>
+<div class="space-y-2">
+<div class="flex items-center">
+<span class="text-xs w-16">MIL</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-3 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 78%"></div>
+</div>
+<span class="ml-2 text-xs">7.8%</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-16">VCB</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-3 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 45%"></div>
+</div>
+<span class="ml-2 text-xs">4.5%</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-16">TCB</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-3 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 52%"></div>
+</div>
+<span class="ml-2 text-xs">5.2%</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-16">ACB</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-3 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 68%"></div>
+</div>
+<span class="ml-2 text-xs">6.8%</span>
+</div>
+</div>
+<div class="flex items-center">
+<span class="text-xs w-16">Ngành</span>
+<div class="flex-1 flex items-center">
+<div class="w-full bg-gray-200 h-3 rounded-sm overflow-hidden">
+<div class="bg-green-500 h-full" style="width: 58%"></div>
+</div>
+<span class="ml-2 text-xs">5.8%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Financial Charts -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="bg-white rounded shadow">
+<div class="p-3 border-b border-gray-200 flex justify-between items-center">
+<h2 class="font-semibold">Doanh thu & Lợi nhuận</h2>
+<button class="text-gray-500 hover:text-primary">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-more-2-fill"></i>
+</div>
+</button>
+</div>
+<div class="p-4">
+<div class="chart-container" id="revenueChart"></div>
+</div>
+</div>
+<div class="bg-white rounded shadow">
+<div class="p-3 border-b border-gray-200 flex justify-between items-center">
+<h2 class="font-semibold">Tăng trưởng theo quý</h2>
+<button class="text-gray-500 hover:text-primary">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-more-2-fill"></i>
+</div>
+</button>
+</div>
+<div class="p-4">
+<div class="chart-container" id="quarterlyGrowthChart"></div>
+</div>
+</div>
+</div>
+<!-- More Financial Charts -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="bg-white rounded shadow">
+<div class="p-3 border-b border-gray-200 flex justify-between items-center">
+<h2 class="font-semibold">Cơ cấu thu nhập</h2>
+<button class="text-gray-500 hover:text-primary">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-more-2-fill"></i>
+</div>
+</button>
+</div>
+<div class="p-4">
+<div class="chart-container" id="incomeStructureChart"></div>
+</div>
+</div>
+<div class="bg-white rounded shadow">
+<div class="p-3 border-b border-gray-200 flex justify-between items-center">
+<h2 class="font-semibold">Chất lượng tài sản</h2>
+<button class="text-gray-500 hover:text-primary">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-more-2-fill"></i>
+</div>
+</button>
+</div>
+<div class="p-4">
+<div class="chart-container" id="assetQualityChart"></div>
+</div>
+</div>
+</div>
+<!-- Even More Financial Charts -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="bg-white rounded shadow">
+<div class="p-3 border-b border-gray-200 flex justify-between items-center">
+<h2 class="font-semibold">Tăng trưởng tín dụng</h2>
+<button class="text-gray-500 hover:text-primary">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-more-2-fill"></i>
+</div>
+</button>
+</div>
+<div class="p-4">
+<div class="chart-container" id="creditGrowthChart"></div>
+</div>
+</div>
+<div class="bg-white rounded shadow">
+<div class="p-3 border-b border-gray-200 flex justify-between items-center">
+<h2 class="font-semibold">Tăng trưởng tiền gửi</h2>
+<button class="text-gray-500 hover:text-primary">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-more-2-fill"></i>
+</div>
+</button>
+</div>
+<div class="p-4">
+<div class="chart-container" id="depositGrowthChart"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column -->
+<div class="space-y-4">
+<!-- DuPont Analysis -->
+<div class="bg-white rounded shadow">
+<div class="p-3 border-b border-gray-200 flex justify-between items-center">
+<h2 class="font-semibold">Phân tích DuPont</h2>
+<div class="flex items-center">
+<span class="text-xs text-gray-500 mr-2">2025E</span>
+<button class="text-gray-500 hover:text-primary">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-more-2-fill"></i>
+</div>
+</button>
+</div>
+</div>
+<div class="p-4">
+<div class="flex flex-col items-center">
+<div class="text-center mb-4">
+<div class="text-sm font-medium">ROE</div>
+<div class="text-lg font-bold text-primary">22.5%</div>
+</div>
+<div class="flex items-center justify-center w-full mb-4">
+<div class="w-1/3 h-px bg-gray-300"></div>
+<div class="mx-2 text-gray-500">×</div>
+<div class="w-1/3 h-px bg-gray-300"></div>
+</div>
+<div class="grid grid-cols-2 gap-8 mb-4 w-full">
+<div class="text-center">
+<div class="text-sm font-medium">Net Profit Margin</div>
+<div class="text-lg font-bold text-primary">35.2%</div>
+<div class="flex flex-col items-center mt-2">
+<div class="text-xs text-gray-500">Net Income</div>
+<div class="w-8 h-px bg-gray-300 my-1"></div>
+<div class="text-xs text-gray-500">Revenue</div>
+<div class="text-sm font-medium">7,500 / 21,300</div>
+</div>
+</div>
+<div class="text-center">
+<div class="text-sm font-medium">Asset Turnover</div>
+<div class="text-lg font-bold text-primary">0.64x</div>
+<div class="flex flex-col items-center mt-2">
+<div class="text-xs text-gray-500">Revenue</div>
+<div class="w-8 h-px bg-gray-300 my-1"></div>
+<div class="text-xs text-gray-500">Total Assets</div>
+<div class="text-sm font-medium">21,300 / 33,280</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-center w-full mb-4">
+<div class="w-1/3 h-px bg-gray-300"></div>
+<div class="mx-2 text-gray-500">×</div>
+<div class="w-1/3 h-px bg-gray-300"></div>
+</div>
+<div class="grid grid-cols-3 gap-4 w-full">
+<div class="text-center">
+<div class="text-sm font-medium">Operating Margin</div>
+<div class="text-base font-bold text-primary">42.5%</div>
+<div class="text-xs text-gray-500 mt-1">9,052 / 21,300</div>
+</div>
+<div class="text-center">
+<div class="text-sm font-medium">Tax Burden</div>
+<div class="text-base font-bold text-primary">82.8%</div>
+<div class="text-xs text-gray-500 mt-1">7,500 / 9,052</div>
+</div>
+<div class="text-center">
+<div class="text-sm font-medium">Financial Leverage</div>
+<div class="text-base font-bold text-primary">1.56x</div>
+<div class="text-xs text-gray-500 mt-1">33,280 / 21,330</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Currency Flow Analysis -->
+<div class="bg-white rounded shadow">
+<div class="p-3 border-b border-gray-200 flex justify-between items-center">
+<h2 class="font-semibold">Phân tích dòng tiền tệ</h2>
+<div class="flex items-center">
+<span class="text-xs text-gray-500 mr-2">Q2/2024</span>
+<button class="text-gray-500 hover:text-primary">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-more-2-fill"></i>
+</div>
+</button>
+</div>
+</div>
+<div class="p-4">
+<div class="chart-container" id="currencyFlowChart"></div>
+<div class="mt-4 space-y-3">
+<div class="flex items-center justify-between text-xs">
+<span class="text-gray-500">Tổng dòng tiền vào:</span>
+<span class="font-medium text-green-500">+2,850 tỷ VND</span>
+</div>
+<div class="flex items-center justify-between text-xs">
+<span class="text-gray-500">Tổng dòng tiền ra:</span>
+<span class="font-medium text-red-500">-1,250 tỷ VND</span>
+</div>
+<div class="flex items-center justify-between text-xs">
+<span class="text-gray-500">Dòng tiền ròng:</span>
+<span class="font-medium text-primary">+1,600 tỷ VND</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Trading Signals -->
+<div class="bg-white rounded shadow">
+<div class="p-3 border-b border-gray-200 flex justify-between items-center">
+<h2 class="font-semibold">Tín hiệu giao dịch</h2>
+<div class="flex items-center">
+<span class="text-xs text-gray-500 mr-2">20/06/2025</span>
+<button class="text-gray-500 hover:text-primary">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-more-2-fill"></i>
+</div>
+</button>
+</div>
+</div>
+<div class="p-4">
+<div class="bg-red-50 border border-red-200 rounded p-3 mb-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center">
+<div class="w-6 h-6 flex items-center justify-center text-red-500 mr-2">
+<i class="ri-alert-line"></i>
+</div>
+<span class="text-sm font-medium text-red-700">Tín hiệu bán</span>
+</div>
+<span class="text-xs text-red-700 font-medium">RSI quá mua</span>
+</div>
+</div>
+<div class="space-y-4">
+<div>
+<h3 class="text-xs font-medium mb-2">Chỉ báo kỹ thuật</h3>
+<div class="grid grid-cols-2 gap-2">
+<div class="flex items-center justify-between bg-gray-50 p-2 rounded">
+<span class="text-xs">RSI (14)</span>
+<span class="text-xs font-medium text-red-500">72.5</span>
+</div>
+<div class="flex items-center justify-between bg-gray-50 p-2 rounded">
+<span class="text-xs">MACD</span>
+<span class="text-xs font-medium text-green-500">Tăng</span>
+</div>
+<div class="flex items-center justify-between bg-gray-50 p-2 rounded">
+<span class="text-xs">MA (20)</span>
+<span class="text-xs font-medium text-green-500">Trên</span>
+</div>
+<div class="flex items-center justify-between bg-gray-50 p-2 rounded">
+<span class="text-xs">MA (50)</span>
+<span class="text-xs font-medium text-green-500">Trên</span>
+</div>
+<div class="flex items-center justify-between bg-gray-50 p-2 rounded">
+<span class="text-xs">Bollinger</span>
+<span class="text-xs font-medium text-red-500">Trên dải</span>
+</div>
+<div class="flex items-center justify-between bg-gray-50 p-2 rounded">
+<span class="text-xs">Stochastic</span>
+<span class="text-xs font-medium text-red-500">Quá mua</span>
+</div>
+</div>
+</div>
+<div>
+<h3 class="text-xs font-medium mb-2">Mức hỗ trợ & kháng cự</h3>
+<div class="space-y-2">
+<div class="flex items-center justify-between">
+<span class="text-xs text-red-500">Kháng cự 2</span>
+<span class="text-xs font-medium">21,500đ</span>
+<span class="text-xs text-gray-500">+11.7%</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-xs text-red-500">Kháng cự 1</span>
+<span class="text-xs font-medium">20,200đ</span>
+<span class="text-xs text-gray-500">+4.9%</span>
+</div>
+<div class="flex items-center justify-between font-medium">
+<span class="text-xs text-primary">Giá hiện tại</span>
+<span class="text-xs text-primary">19,250đ</span>
+<span class="text-xs text-primary">0.0%</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-xs text-green-500">Hỗ trợ 1</span>
+<span class="text-xs font-medium">18,400đ</span>
+<span class="text-xs text-gray-500">-4.4%</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-xs text-green-500">Hỗ trợ 2</span>
+<span class="text-xs font-medium">17,500đ</span>
+<span class="text-xs text-gray-500">-9.1%</span>
+</div>
+</div>
+</div>
+<div>
+<h3 class="text-xs font-medium mb-2">Khuyến nghị</h3>
+<div class="space-y-2">
+<div class="flex items-center">
+<div class="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
+<span class="text-xs">Chốt lời một phần ở vùng giá hiện tại</span>
+</div>
+<div class="flex items-center">
+<div class="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
+<span class="text-xs">Đặt stop loss ở mức 18,400đ</span>
+</div>
+<div class="flex items-center">
+<div class="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
+<span class="text-xs">Theo dõi khối lượng giao dịch trong phiên tới</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Valuation Metrics -->
+<div class="bg-white rounded shadow">
+<div class="p-3 border-b border-gray-200 flex justify-between items-center">
+<h2 class="font-semibold">Chỉ số định giá</h2>
+<button class="text-gray-500 hover:text-primary">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-more-2-fill"></i>
+</div>
+</button>
+</div>
+<div class="p-4">
+<div class="space-y-4">
+<div class="grid grid-cols-3 gap-2">
+<div class="bg-gray-50 p-2 rounded">
+<div class="text-xs text-gray-500">P/E</div>
+<div class="text-sm font-medium">8.2x</div>
+<div class="text-xs text-green-500">-12% vs. ngành</div>
+</div>
+<div class="bg-gray-50 p-2 rounded">
+<div class="text-xs text-gray-500">P/B</div>
+<div class="text-sm font-medium">1.6x</div>
+<div class="text-xs text-green-500">-8% vs. ngành</div>
+</div>
+<div class="bg-gray-50 p-2 rounded">
+<div class="text-xs text-gray-500">Lợi suất cổ tức</div>
+<div class="text-sm font-medium">7.8%</div>
+<div class="text-xs text-green-500">+34% vs. ngành</div>
+</div>
+</div>
+<div>
+<h3 class="text-xs font-medium mb-2">So sánh P/E</h3>
+<div class="chart-container" id="peComparisonChart"></div>
+</div>
+<div>
+<h3 class="text-xs font-medium mb-2">Định giá tương đối</h3>
+<div class="space-y-2">
+<div class="flex items-center justify-between">
+<span class="text-xs">P/E trung bình 5 năm</span>
+<span class="text-xs font-medium">10.5x</span>
+<span class="text-xs text-green-500">-21.9%</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-xs">P/B trung bình 5 năm</span>
+<span class="text-xs font-medium">1.8x</span>
+<span class="text-xs text-green-500">-11.1%</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-xs">P/E trung vị ngành</span>
+<span class="text-xs font-medium">9.3x</span>
+<span class="text-xs text-green-500">-11.8%</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-xs">P/B trung vị ngành</span>
+<span class="text-xs font-medium">1.7x</span>
+<span class="text-xs text-green-500">-5.9%</span>
+</div>
+</div>
+</div>
+<div>
+<h3 class="text-xs font-medium mb-2">Mục tiêu giá</h3>
+<div class="space-y-2">
+<div class="flex items-center justify-between">
+<span class="text-xs">Dựa trên P/E</span>
+<span class="text-xs font-medium">21,800đ</span>
+<span class="text-xs text-green-500">+13.2%</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-xs">Dựa trên P/B</span>
+<span class="text-xs font-medium">20,500đ</span>
+<span class="text-xs text-green-500">+6.5%</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-xs">Dựa trên DDM</span>
+<span class="text-xs font-medium">22,200đ</span>
+<span class="text-xs text-green-500">+15.3%</span>
+</div>
+<div class="flex items-center justify-between font-medium">
+<span class="text-xs">Trung bình</span>
+<span class="text-xs">21,500đ</span>
+<span class="text-xs text-green-500">+11.7%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Key Ratios -->
+<div class="bg-white rounded shadow">
+<div class="p-3 border-b border-gray-200 flex justify-between items-center">
+<h2 class="font-semibold">Các tỷ số chính</h2>
+<button class="text-gray-500 hover:text-primary">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-more-2-fill"></i>
+</div>
+</button>
+</div>
+<div class="p-4">
+<div class="space-y-4">
+<div>
+<h3 class="text-xs font-medium mb-2">Hiệu quả hoạt động</h3>
+<div class="grid grid-cols-2 gap-2">
+<div class="flex items-center justify-between bg-gray-50 p-2 rounded">
+<span class="text-xs">ROE</span>
+<span class="text-xs font-medium">22.5%</span>
+</div>
+<div class="flex items-center justify-between bg-gray-50 p-2 rounded">
+<span class="text-xs">ROA</span>
+<span class="text-xs font-medium">1.8%</span>
+</div>
+<div class="flex items-center justify-between bg-gray-50 p-2 rounded">
+<span class="text-xs">NIM</span>
+<span class="text-xs font-medium">4.2%</span>
+</div>
+<div class="flex items-center justify-between bg-gray-50 p-2 rounded">
+<span class="text-xs">CIR</span>
+<span class="text-xs font-medium">35.8%</span>
+</div>
+</div>
+</div>
+<div>
+<h3 class="text-xs font-medium mb-2">Chất lượng tài sản</h3>
+<div class="grid grid-cols-2 gap-2">
+<div class="flex items-center justify-between bg-gray-50 p-2 rounded">
+<span class="text-xs">NPL</span>
+<span class="text-xs font-medium">1.2%</span>
+</div>
+<div class="flex items-center justify-between bg-gray-50 p-2 rounded">
+<span class="text-xs">LLR/NPL</span>
+<span class="text-xs font-medium">165%</span>
+</div>
+<div class="flex items-center justify-between bg-gray-50 p-2 rounded">
+<span class="text-xs">Credit cost</span>
+<span class="text-xs font-medium">1.1%</span>
+</div>
+<div class="flex items-center justify-between bg-gray-50 p-2 rounded">
+<span class="text-xs">Nợ xấu nhóm 2</span>
+<span class="text-xs font-medium">1.8%</span>
+</div>
+</div>
+</div>
+<div>
+<h3 class="text-xs font-medium mb-2">Thanh khoản & Vốn</h3>
+<div class="grid grid-cols-2 gap-2">
+<div class="flex items-center justify-between bg-gray-50 p-2 rounded">
+<span class="text-xs">LDR</span>
+<span class="text-xs font-medium">78.5%</span>
+</div>
+<div class="flex items-center justify-between bg-gray-50 p-2 rounded">
+<span class="text-xs">CAR</span>
+<span class="text-xs font-medium">12.8%</span>
+</div>
+<div class="flex items-center justify-between bg-gray-50 p-2 rounded">
+<span class="text-xs">CASA</span>
+<span class="text-xs font-medium">22.4%</span>
+</div>
+<div class="flex items-center justify-between bg-gray-50 p-2 rounded">
+<span class="text-xs">Tier 1 ratio</span>
+<span class="text-xs font-medium">10.5%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Ownership & Insider Details -->
+<div class="bg-white rounded shadow">
+<div class="p-3 border-b border-gray-200 flex justify-between items-center">
+<h2 class="font-semibold">Sở hữu & Giao dịch nội bộ</h2>
+<button class="text-gray-500 hover:text-primary">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-more-2-fill"></i>
+</div>
+</button>
+</div>
+<div class="p-4">
+<div class="space-y-4">
+<div>
+<h3 class="text-xs font-medium mb-2">Cơ cấu sở hữu</h3>
+<div class="chart-container" id="ownershipChart" style="height: 180px;"></div>
+</div>
+<div>
+<h3 class="text-xs font-medium mb-2">Giao dịch nội bộ gần đây</h3>
+<div class="space-y-2">
+<div class="flex items-center justify-between text-xs">
+<span class="w-32">Nguyễn Thị Minh</span>
+<span class="w-24">Phó TGĐ</span>
+<span class="w-16 text-green-500">Mua</span>
+<span class="w-16">200,000</span>
+<span>15/06/2025</span>
+</div>
+<div class="flex items-center justify-between text-xs">
+<span class="w-32">Trần Văn Hùng</span>
+<span class="w-24">TV HĐQT</span>
+<span class="w-16 text-green-500">Mua</span>
+<span class="w-16">350,000</span>
+<span>10/06/2025</span>
+</div>
+<div class="flex items-center justify-between text-xs">
+<span class="w-32">Lê Thị Hương</span>
+<span class="w-24">Kế toán trưởng</span>
+<span class="w-16 text-red-500">Bán</span>
+<span class="w-16">120,000</span>
+<span>02/06/2025</span>
+</div>
+<div class="flex items-center justify-between text-xs">
+<span class="w-32">Phạm Minh Tú</span>
+<span class="w-24">TV HĐQT</span>
+<span class="w-16 text-green-500">Mua</span>
+<span class="w-16">500,000</span>
+<span>25/05/2025</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<script id="chartInitialization">
+document.addEventListener('DOMContentLoaded', function() {
+// Crypto Chart
+const cryptoChart = echarts.init(document.getElementById('cryptoChart'));
+const cryptoChartOption = {
+animation: false,
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+borderColor: '#ddd',
+borderWidth: 1,
+textStyle: {
+color: '#1f2937'
+}
+},
+grid: {
+left: 0,
+right: 0,
+top: 10,
+bottom: 0,
+containLabel: true
+},
+xAxis: {
+type: 'category',
+data: ['01/2025', '02/2025', '03/2025', '04/2025', '05/2025', '06/2025'],
+axisLine: {
+lineStyle: {
+color: '#ddd'
+}
+},
+axisLabel: {
+color: '#1f2937'
+}
+},
+yAxis: {
+type: 'value',
+axisLine: {
+show: false
+},
+axisLabel: {
+color: '#1f2937'
+},
+splitLine: {
+lineStyle: {
+color: '#eee'
+}
+}
+},
+series: [
+{
+name: 'BTC/USD',
+type: 'line',
+data: [42000, 45000, 48000, 52000, 49000, 51000],
+smooth: true,
+symbol: 'none',
+lineStyle: {
+width: 3,
+color: 'rgba(251, 191, 114, 1)'
+},
+areaStyle: {
+color: {
+type: 'linear',
+x: 0,
+y: 0,
+x2: 0,
+y2: 1,
+colorStops: [{
+offset: 0,
+color: 'rgba(251, 191, 114, 0.2)'
+}, {
+offset: 1,
+color: 'rgba(251, 191, 114, 0.05)'
+}]
+}
+}
+}
+]
+};
+cryptoChart.setOption(cryptoChartOption);
+// Forex Chart
+const forexChart = echarts.init(document.getElementById('forexChart'));
+const forexChartOption = {
+animation: false,
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+borderColor: '#ddd',
+borderWidth: 1,
+textStyle: {
+color: '#1f2937'
+}
+},
+grid: {
+left: 0,
+right: 0,
+top: 10,
+bottom: 0,
+containLabel: true
+},
+xAxis: {
+type: 'category',
+data: ['01/2025', '02/2025', '03/2025', '04/2025', '05/2025', '06/2025'],
+axisLine: {
+lineStyle: {
+color: '#ddd'
+}
+},
+axisLabel: {
+color: '#1f2937'
+}
+},
+yAxis: {
+type: 'value',
+axisLine: {
+show: false
+},
+axisLabel: {
+color: '#1f2937'
+},
+splitLine: {
+lineStyle: {
+color: '#eee'
+}
+}
+},
+series: [
+{
+name: 'EUR/USD',
+type: 'line',
+data: [1.08, 1.09, 1.085, 1.095, 1.088, 1.092],
+smooth: true,
+symbol: 'none',
+lineStyle: {
+width: 3,
+color: 'rgba(141, 211, 199, 1)'
+},
+areaStyle: {
+color: {
+type: 'linear',
+x: 0,
+y: 0,
+x2: 0,
+y2: 1,
+colorStops: [{
+offset: 0,
+color: 'rgba(141, 211, 199, 0.2)'
+}, {
+offset: 1,
+color: 'rgba(141, 211, 199, 0.05)'
+}]
+}
+}
+}
+]
+};
+forexChart.setOption(forexChartOption);
+// Market Heatmap
+const marketHeatmap = echarts.init(document.getElementById('marketHeatmap'));
+const marketHeatmapOption = {
+animation: false,
+tooltip: {
+trigger: 'item',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+borderColor: '#ddd',
+borderWidth: 1,
+textStyle: {
+color: '#1f2937'
+}
+},
+series: [
+{
+type: 'treemap',
+data: [
+{
+name: 'Stocks',
+value: 1000,
+children: [
+{ name: 'Banking', value: 250, itemStyle: { color: 'rgba(87, 181, 231, 0.8)' } },
+{ name: 'Real Estate', value: 200, itemStyle: { color: 'rgba(141, 211, 199, 0.8)' } },
+{ name: 'Technology', value: 180, itemStyle: { color: 'rgba(251, 191, 114, 0.8)' } },
+{ name: 'Retail', value: 150, itemStyle: { color: 'rgba(252, 141, 98, 0.8)' } }
+]
+},
+{
+name: 'Crypto',
+value: 800,
+children: [
+{ name: 'BTC', value: 300, itemStyle: { color: 'rgba(87, 181, 231, 0.6)' } },
+{ name: 'ETH', value: 250, itemStyle: { color: 'rgba(141, 211, 199, 0.6)' } },
+{ name: 'Others', value: 250, itemStyle: { color: 'rgba(251, 191, 114, 0.6)' } }
+]
+},
+{
+name: 'Forex',
+value: 600,
+children: [
+{ name: 'EUR/USD', value: 200, itemStyle: { color: 'rgba(87, 181, 231, 0.4)' } },
+{ name: 'GBP/USD', value: 150, itemStyle: { color: 'rgba(141, 211, 199, 0.4)' } },
+{ name: 'USD/JPY', value: 150, itemStyle: { color: 'rgba(251, 191, 114, 0.4)' } }
+]
+}
+],
+label: {
+show: true,
+formatter: '{b}: {c}'
+},
+breadcrumb: {
+show: false
+}
+}
+]
+};
+marketHeatmap.setOption(marketHeatmapOption);
+// Price Chart
+const priceChart = echarts.init(document.getElementById('priceChart'));
+const priceChartOption = {
+animation: false,
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+borderColor: '#ddd',
+borderWidth: 1,
+textStyle: {
+color: '#1f2937'
+}
+},
+grid: {
+left: 0,
+right: 0,
+top: 10,
+bottom: 0,
+containLabel: true
+},
+xAxis: {
+type: 'category',
+data: ['01/2025', '02/2025', '03/2025', '04/2025', '05/2025', '06/2025'],
+axisLine: {
+lineStyle: {
+color: '#ddd'
+}
+},
+axisLabel: {
+color: '#1f2937'
+}
+},
+yAxis: {
+type: 'value',
+axisLine: {
+show: false
+},
+axisLabel: {
+color: '#1f2937'
+},
+splitLine: {
+lineStyle: {
+color: '#eee'
+}
+}
+},
+series: [
+{
+name: 'Giá cổ phiếu',
+type: 'line',
+data: [14500, 15200, 16800, 17500, 18400, 19250],
+smooth: true,
+symbol: 'none',
+lineStyle: {
+width: 3,
+color: 'rgba(87, 181, 231, 1)'
+},
+areaStyle: {
+color: {
+type: 'linear',
+x: 0,
+y: 0,
+x2: 0,
+y2: 1,
+colorStops: [{
+offset: 0,
+color: 'rgba(87, 181, 231, 0.2)'
+}, {
+offset: 1,
+color: 'rgba(87, 181, 231, 0.05)'
+}]
+}
+}
+},
+{
+name: 'VN-Index',
+type: 'line',
+data: [1200, 1250, 1280, 1310, 1350, 1380],
+smooth: true,
+symbol: 'none',
+lineStyle: {
+width: 2,
+color: 'rgba(141, 211, 199, 1)',
+type: 'dashed'
+}
+}
+]
+};
+priceChart.setOption(priceChartOption);
+// Radar Chart
+const radarChart = echarts.init(document.getElementById('radarChart'));
+const radarChartOption = {
+animation: false,
+tooltip: {
+trigger: 'item',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+borderColor: '#ddd',
+borderWidth: 1,
+textStyle: {
+color: '#1f2937'
+}
+},
+radar: {
+indicator: [
+{ name: 'Tăng trưởng', max: 100 },
+{ name: 'Khả năng sinh lời', max: 100 },
+{ name: 'Định giá', max: 100 },
+{ name: 'Chất lượng tài sản', max: 100 },
+{ name: 'Thanh khoản', max: 100 },
+{ name: 'Quản trị', max: 100 }
+],
+radius: '65%',
+splitNumber: 4,
+axisName: {
+color: '#1f2937',
+fontSize: 10
+},
+splitLine: {
+lineStyle: {
+color: '#eee'
+}
+},
+splitArea: {
+show: true,
+areaStyle: {
+color: ['rgba(255, 255, 255, 0.1)', 'rgba(245, 245, 245, 0.1)']
+}
+},
+axisLine: {
+lineStyle: {
+color: '#ddd'
+}
+}
+},
+series: [
+{
+name: 'MIL vs Ngành',
+type: 'radar',
+data: [
+{
+value: [85, 78, 65, 80, 82, 75],
+name: 'MIL',
+areaStyle: {
+color: 'rgba(87, 181, 231, 0.1)'
+},
+lineStyle: {
+color: 'rgba(87, 181, 231, 1)',
+width: 2
+},
+itemStyle: {
+color: 'rgba(87, 181, 231, 1)'
+}
+},
+{
+value: [70, 65, 70, 75, 70, 68],
+name: 'Ngành',
+areaStyle: {
+color: 'rgba(141, 211, 199, 0.1)'
+},
+lineStyle: {
+color: 'rgba(141, 211, 199, 1)',
+width: 2
+},
+itemStyle: {
+color: 'rgba(141, 211, 199, 1)'
+}
+}
+]
+}
+]
+};
+radarChart.setOption(radarChartOption);
+// PE Comparison Chart
+const peComparisonChart = echarts.init(document.getElementById('peComparisonChart'));
+const peComparisonChartOption = {
+animation: false,
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+borderColor: '#ddd',
+borderWidth: 1,
+textStyle: {
+color: '#1f2937'
+}
+},
+grid: {
+left: 0,
+right: 0,
+top: 10,
+bottom: 0,
+containLabel: true
+},
+xAxis: {
+type: 'category',
+data: ['MIL', 'VCB', 'TCB', 'MBB', 'ACB', 'VPB', 'Ngành'],
+axisLine: {
+lineStyle: {
+color: '#ddd'
+}
+},
+axisLabel: {
+color: '#1f2937',
+fontSize: 10
+}
+},
+yAxis: {
+type: 'value',
+axisLine: {
+show: false
+},
+axisLabel: {
+color: '#1f2937',
+fontSize: 10
+},
+splitLine: {
+lineStyle: {
+color: '#eee'
+}
+}
+},
+series: [
+{
+name: 'P/E',
+type: 'bar',
+data: [8.2, 12.5, 9.8, 8.5, 9.2, 7.8, 9.3],
+itemStyle: {
+color: function(params) {
+if (params.dataIndex === 0) {
+return 'rgba(87, 181, 231, 1)';
+} else if (params.dataIndex === 6) {
+return 'rgba(251, 191, 114, 1)';
+}
+return 'rgba(141, 211, 199, 1)';
+},
+borderRadius: [4, 4, 0, 0]
+},
+label: {
+show: true,
+position: 'top',
+fontSize: 10,
+color: '#1f2937'
+}
+}
+]
+};
+peComparisonChart.setOption(peComparisonChartOption);
+// Ownership Chart
+const ownershipChart = echarts.init(document.getElementById('ownershipChart'));
+const ownershipChartOption = {
+animation: false,
+tooltip: {
+trigger: 'item',
+formatter: '{a} <br/>{b}: {c} ({d}%)',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+borderColor: '#ddd',
+borderWidth: 1,
+textStyle: {
+color: '#1f2937'
+}
+},
+legend: {
+orient: 'vertical',
+right: 10,
+top: 'center',
+itemWidth: 10,
+itemHeight: 10,
+textStyle: {
+fontSize: 10,
+color: '#1f2937'
+}
+},
+series: [
+{
+name: 'Cơ cấu sở hữu',
+type: 'pie',
+radius: ['45%', '70%'],
+center: ['40%', '50%'],
+avoidLabelOverlap: false,
+itemStyle: {
+borderRadius: 8,
+borderColor: '#fff',
+borderWidth: 2
+},
+label: {
+show: false
+},
+emphasis: {
+label: {
+show: false
+}
+},
+labelLine: {
+show: false
+},
+data: [
+{ value: 45, name: 'Nhà nước' },
+{ value: 25, name: 'Khối ngoại' },
+{ value: 15, name: 'Cá nhân trong nước' },
+{ value: 10, name: 'Tổ chức trong nước' },
+{ value: 5, name: 'Khác' }
+],
+color: [
+'rgba(87, 181, 231, 1)',
+'rgba(141, 211, 199, 1)',
+'rgba(251, 191, 114, 1)',
+'rgba(252, 141, 98, 1)',
+'rgba(166, 216, 84, 1)'
+]
+}
+]
+};
+ownershipChart.setOption(ownershipChartOption);
+// Revenue Chart
+const revenueChart = echarts.init(document.getElementById('revenueChart'));
+const revenueChartOption = {
+animation: false,
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+borderColor: '#ddd',
+borderWidth: 1,
+textStyle: {
+color: '#1f2937'
+}
+},
+legend: {
+data: ['Doanh thu', 'Lợi nhuận'],
+bottom: 0,
+itemWidth: 10,
+itemHeight: 10,
+textStyle: {
+fontSize: 10,
+color: '#1f2937'
+}
+},
+grid: {
+left: 0,
+right: 0,
+top: 10,
+bottom: 30,
+containLabel: true
+},
+xAxis: {
+type: 'category',
+data: ['2020', '2021', '2022', '2023', '2024E', '2025E'],
+axisLine: {
+lineStyle: {
+color: '#ddd'
+}
+},
+axisLabel: {
+color: '#1f2937',
+fontSize: 10
+}
+},
+yAxis: {
+type: 'value',
+axisLine: {
+show: false
+},
+axisLabel: {
+color: '#1f2937',
+fontSize: 10
+},
+splitLine: {
+lineStyle: {
+color: '#eee'
+}
+}
+},
+series: [
+{
+name: 'Doanh thu',
+type: 'bar',
+data: [12500, 15200, 18500, 22800, 27500, 32000],
+itemStyle: {
+color: 'rgba(87, 181, 231, 1)',
+borderRadius: [4, 4, 0, 0]
+}
+},
+{
+name: 'Lợi nhuận',
+type: 'line',
+data: [2800, 3500, 4200, 5100, 6200, 7500],
+smooth: true,
+symbol: 'circle',
+symbolSize: 6,
+lineStyle: {
+width: 3,
+color: 'rgba(251, 191, 114, 1)'
+},
+itemStyle: {
+color: 'rgba(251, 191, 114, 1)'
+}
+}
+]
+};
+revenueChart.setOption(revenueChartOption);
+// Quarterly Growth Chart
+const quarterlyGrowthChart = echarts.init(document.getElementById('quarterlyGrowthChart'));
+const quarterlyGrowthChartOption = {
+animation: false,
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+borderColor: '#ddd',
+borderWidth: 1,
+textStyle: {
+color: '#1f2937'
+}
+},
+legend: {
+data: ['Tăng trưởng doanh thu', 'Tăng trưởng lợi nhuận'],
+bottom: 0,
+itemWidth: 10,
+itemHeight: 10,
+textStyle: {
+fontSize: 10,
+color: '#1f2937'
+}
+},
+grid: {
+left: 0,
+right: 0,
+top: 10,
+bottom: 30,
+containLabel: true
+},
+xAxis: {
+type: 'category',
+data: ['Q1/24', 'Q2/24', 'Q3/24', 'Q4/24', 'Q1/25', 'Q2/25'],
+axisLine: {
+lineStyle: {
+color: '#ddd'
+}
+},
+axisLabel: {
+color: '#1f2937',
+fontSize: 10
+}
+},
+yAxis: {
+type: 'value',
+axisLine: {
+show: false
+},
+axisLabel: {
+color: '#1f2937',
+fontSize: 10,
+formatter: '{value}%'
+},
+splitLine: {
+lineStyle: {
+color: '#eee'
+}
+}
+},
+series: [
+{
+name: 'Tăng trưởng doanh thu',
+type: 'bar',
+data: [18.5, 20.2, 22.5, 21.8, 19.5, 18.2],
+itemStyle: {
+color: 'rgba(87, 181, 231, 1)',
+borderRadius: [4, 4, 0, 0]
+}
+},
+{
+name: 'Tăng trưởng lợi nhuận',
+type: 'line',
+data: [22.5, 24.8, 25.2, 23.5, 21.8, 20.5],
+smooth: true,
+symbol: 'circle',
+symbolSize: 6,
+lineStyle: {
+width: 3,
+color: 'rgba(251, 191, 114, 1)'
+},
+itemStyle: {
+color: 'rgba(251, 191, 114, 1)'
+}
+}
+]
+};
+quarterlyGrowthChart.setOption(quarterlyGrowthChartOption);
+// Income Structure Chart
+const incomeStructureChart = echarts.init(document.getElementById('incomeStructureChart'));
+const incomeStructureChartOption = {
+animation: false,
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+borderColor: '#ddd',
+borderWidth: 1,
+textStyle: {
+color: '#1f2937'
+}
+},
+legend: {
+data: ['Thu nhập lãi thuần', 'Thu nhập ngoài lãi', 'Thu nhập khác'],
+bottom: 0,
+itemWidth: 10,
+itemHeight: 10,
+textStyle: {
+fontSize: 10,
+color: '#1f2937'
+}
+},
+grid: {
+left: 0,
+right: 0,
+top: 10,
+bottom: 30,
+containLabel: true
+},
+xAxis: {
+type: 'category',
+data: ['2020', '2021', '2022', '2023', '2024E'],
+axisLine: {
+lineStyle: {
+color: '#ddd'
+}
+},
+axisLabel: {
+color: '#1f2937',
+fontSize: 10
+}
+},
+yAxis: {
+type: 'value',
+axisLine: {
+show: false
+},
+axisLabel: {
+color: '#1f2937',
+fontSize: 10
+},
+splitLine: {
+lineStyle: {
+color: '#eee'
+}
+}
+},
+series: [
+{
+name: 'Thu nhập lãi thuần',
+type: 'bar',
+stack: 'total',
+data: [8500, 10200, 12500, 15200, 18500],
+itemStyle: {
+color: 'rgba(87, 181, 231, 1)',
+borderRadius: [4, 4, 0, 0]
+}
+},
+{
+name: 'Thu nhập ngoài lãi',
+type: 'bar',
+stack: 'total',
+data: [3200, 4100, 5000, 6200, 7500],
+itemStyle: {
+color: 'rgba(141, 211, 199, 1)'
+}
+},
+{
+name: 'Thu nhập khác',
+type: 'bar',
+stack: 'total',
+data: [800, 900, 1000, 1400, 1500],
+itemStyle: {
+color: 'rgba(251, 191, 114, 1)'
+}
+}
+]
+};
+incomeStructureChart.setOption(incomeStructureChartOption);
+// Asset Quality Chart
+const assetQualityChart = echarts.init(document.getElementById('assetQualityChart'));
+const assetQualityChartOption = {
+animation: false,
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+borderColor: '#ddd',
+borderWidth: 1,
+textStyle: {
+color: '#1f2937'
+}
+},
+legend: {
+data: ['Tỷ lệ nợ xấu (NPL)', 'Tỷ lệ dự phòng/NPL'],
+bottom: 0,
+itemWidth: 10,
+itemHeight: 10,
+textStyle: {
+fontSize: 10,
+color: '#1f2937'
+}
+},
+grid: {
+left: 0,
+right: 0,
+top: 10,
+bottom: 30,
+containLabel: true
+},
+xAxis: {
+type: 'category',
+data: ['2020', '2021', '2022', '2023', '2024E', '2025E'],
+axisLine: {
+lineStyle: {
+color: '#ddd'
+}
+},
+axisLabel: {
+color: '#1f2937',
+fontSize: 10
+}
+},
+yAxis: [
+{
+type: 'value',
+name: 'NPL',
+min: 0,
+max: 3,
+axisLine: {
+show: false
+},
+axisLabel: {
+color: '#1f2937',
+fontSize: 10,
+formatter: '{value}%'
+},
+splitLine: {
+lineStyle: {
+color: '#eee'
+}
+}
+},
+{
+type: 'value',
+name: 'Tỷ lệ dự phòng',
+min: 0,
+max: 200,
+axisLine: {
+show: false
+},
+axisLabel: {
+color: '#1f2937',
+fontSize: 10,
+formatter: '{value}%'
+},
+splitLine: {
+show: false
+}
+}
+],
+series: [
+{
+name: 'Tỷ lệ nợ xấu (NPL)',
+type: 'bar',
+data: [1.8, 1.6, 1.5, 1.3, 1.2, 1.1],
+itemStyle: {
+color: 'rgba(87, 181, 231, 1)',
+borderRadius: [4, 4, 0, 0]
+}
+},
+{
+name: 'Tỷ lệ dự phòng/NPL',
+type: 'line',
+yAxisIndex: 1,
+data: [120, 135, 145, 155, 165, 175],
+smooth: true,
+symbol: 'circle',
+symbolSize: 6,
+lineStyle: {
+width: 3,
+color: 'rgba(251, 191, 114, 1)'
+},
+itemStyle: {
+color: 'rgba(251, 191, 114, 1)'
+}
+}
+]
+};
+assetQualityChart.setOption(assetQualityChartOption);
+// Credit Growth Chart
+const creditGrowthChart = echarts.init(document.getElementById('creditGrowthChart'));
+const creditGrowthChartOption = {
+animation: false,
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+borderColor: '#ddd',
+borderWidth: 1,
+textStyle: {
+color: '#1f2937'
+}
+},
+legend: {
+data: ['Tăng trưởng tín dụng', 'Ngành'],
+bottom: 0,
+itemWidth: 10,
+itemHeight: 10,
+textStyle: {
+fontSize: 10,
+color: '#1f2937'
+}
+},
+grid: {
+left: 0,
+right: 0,
+top: 10,
+bottom: 30,
+containLabel: true
+},
+xAxis: {
+type: 'category',
+data: ['2020', '2021', '2022', '2023', '2024E', '2025E'],
+axisLine: {
+lineStyle: {
+color: '#ddd'
+}
+},
+axisLabel: {
+color: '#1f2937',
+fontSize: 10
+}
+},
+yAxis: {
+type: 'value',
+axisLine: {
+show: false
+},
+axisLabel: {
+color: '#1f2937',
+fontSize: 10,
+formatter: '{value}%'
+},
+splitLine: {
+lineStyle: {
+color: '#eee'
+}
+}
+},
+series: [
+{
+name: 'Tăng trưởng tín dụng',
+type: 'bar',
+data: [15.2, 16.8, 18.5, 20.2, 21.5, 22.8],
+itemStyle: {
+color: 'rgba(87, 181, 231, 1)',
+borderRadius: [4, 4, 0, 0]
+}
+},
+{
+name: 'Ngành',
+type: 'line',
+data: [12.5, 13.2, 14.5, 15.8, 16.5, 17.2],
+smooth: true,
+symbol: 'circle',
+symbolSize: 6,
+lineStyle: {
+width: 3,
+color: 'rgba(141, 211, 199, 1)'
+},
+itemStyle: {
+color: 'rgba(141, 211, 199, 1)'
+}
+}
+]
+};
+creditGrowthChart.setOption(creditGrowthChartOption);
+// Deposit Growth Chart
+const depositGrowthChart = echarts.init(document.getElementById('depositGrowthChart'));
+const depositGrowthChartOption = {
+animation: false,
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+borderColor: '#ddd',
+borderWidth: 1,
+textStyle: {
+color: '#1f2937'
+}
+},
+legend: {
+data: ['Tăng trưởng tiền gửi', 'CASA'],
+bottom: 0,
+itemWidth: 10,
+itemHeight: 10,
+textStyle: {
+fontSize: 10,
+color: '#1f2937'
+}
+},
+grid: {
+left: 0,
+right: 0,
+top: 10,
+bottom: 30,
+containLabel: true
+},
+xAxis: {
+type: 'category',
+data: ['2020', '2021', '2022', '2023', '2024E', '2025E'],
+axisLine: {
+lineStyle: {
+color: '#ddd'
+}
+},
+axisLabel: {
+color: '#1f2937',
+fontSize: 10
+}
+},
+yAxis: [
+{
+type: 'value',
+name: 'Tăng trưởng',
+min: 0,
+max: 25,
+axisLine: {
+show: false
+},
+axisLabel: {
+color: '#1f2937',
+fontSize: 10,
+formatter: '{value}%'
+},
+splitLine: {
+lineStyle: {
+color: '#eee'
+}
+}
+},
+{
+type: 'value',
+name: 'CASA',
+min: 0,
+max: 30,
+axisLine: {
+show: false
+},
+axisLabel: {
+color: '#1f2937',
+fontSize: 10,
+formatter: '{value}%'
+},
+splitLine: {
+show: false
+}
+}
+],
+series: [
+{
+name: 'Tăng trưởng tiền gửi',
+type: 'bar',
+data: [14.2, 15.8, 17.5, 19.2, 20.5, 21.8],
+itemStyle: {
+color: 'rgba(87, 181, 231, 1)',
+borderRadius: [4, 4, 0, 0]
+}
+},
+{
+name: 'CASA',
+type: 'line',
+yAxisIndex: 1,
+data: [16.5, 18.2, 19.5, 21.2, 22.4, 24.5],
+smooth: true,
+symbol: 'circle',
+symbolSize: 6,
+lineStyle: {
+width: 3,
+color: 'rgba(251, 191, 114, 1)'
+},
+itemStyle: {
+color: 'rgba(251, 191, 114, 1)'
+}
+}
+]
+};
+depositGrowthChart.setOption(depositGrowthChartOption);
+// Resize charts when window is resized
+window.addEventListener('resize', function() {
+priceChart.resize();
+cryptoChart.resize();
+forexChart.resize();
+radarChart.resize();
+marketHeatmap.resize();
+peComparisonChart.resize();
+ownershipChart.resize();
+revenueChart.resize();
+quarterlyGrowthChart.resize();
+incomeStructureChart.resize();
+assetQualityChart.resize();
+creditGrowthChart.resize();
+depositGrowthChart.resize();
+currencyFlowChart.resize();
+});
+// Currency Flow Chart
+const currencyFlowChart = echarts.init(document.getElementById('currencyFlowChart'));
+const currencyFlowChartOption = {
+animation: false,
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(17, 24, 39, 0.8)',
+borderColor: '#374151',
+borderWidth: 1,
+textStyle: {
+color: '#e5e7eb'
+}
+},
+legend: {
+data: ['Foreign Flow', 'Institutional Flow', 'Retail Flow'],
+bottom: 0,
+textStyle: {
+color: '#e5e7eb'
+}
+},
+grid: {
+left: 0,
+right: 0,
+top: 10,
+bottom: 30,
+containLabel: true
+},
+xAxis: {
+type: 'category',
+data: ['May 20', 'May 25', 'May 30', 'Jun 5', 'Jun 10', 'Jun 15', 'Jun 20'],
+axisLine: {
+lineStyle: {
+color: '#374151'
+}
+},
+axisLabel: {
+color: '#e5e7eb'
+}
+},
+yAxis: {
+type: 'value',
+axisLine: {
+show: false
+},
+axisLabel: {
+color: '#e5e7eb',
+formatter: '${value}M'
+},
+splitLine: {
+lineStyle: {
+color: '#374151'
+}
+}
+},
+series: [
+{
+name: 'Foreign Flow',
+type: 'line',
+data: [45, 65, 85, 95, 110, 120, 125],
+smooth: true,
+symbol: 'circle',
+symbolSize: 6,
+lineStyle: {
+width: 3,
+color: 'rgba(87, 181, 231, 1)'
+},
+itemStyle: {
+color: 'rgba(87, 181, 231, 1)'
+}
+},
+{
+name: 'Institutional Flow',
+type: 'line',
+data: [-15, -25, -30, -35, -40, -42, -45],
+smooth: true,
+symbol: 'circle',
+symbolSize: 6,
+lineStyle: {
+width: 3,
+color: 'rgba(252, 141, 98, 1)'
+},
+itemStyle: {
+color: 'rgba(252, 141, 98, 1)'
+}
+},
+{
+name: 'Retail Flow',
+type: 'line',
+data: [25, 35, 45, 55, 65, 75, 82],
+smooth: true,
+symbol: 'circle',
+symbolSize: 6,
+lineStyle: {
+width: 3,
+color: 'rgba(141, 211, 199, 1)'
+},
+itemStyle: {
+color: 'rgba(141, 211, 199, 1)'
+}
+}
+]
+};
+currencyFlowChart.setOption(currencyFlowChartOption);
+});
+</script>
+</body>
+</html>
