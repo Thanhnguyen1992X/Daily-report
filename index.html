@@ -314,7 +314,30 @@ ML
 </div>
 </div>
 </div>
-<div id="mainChart" class="w-full h-96"></div>
+<div id="mainChart" class="w-full h-96">
+  <!-- TradingView Widget BEGIN -->
+<div class="tradingview-widget-container" style="height:100%;width:100%">
+  <div class="tradingview-widget-container__widget" style="height:calc(100% - 32px);width:100%"></div>
+  <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
+  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+  {
+  "autosize": true,
+  "symbol": "NASDAQ:AAPL",
+  "interval": "D",
+  "timezone": "Etc/UTC",
+  "theme": "light",
+  "style": "1",
+  "locale": "en",
+  "allow_symbol_change": true,
+  "support_host": "https://www.tradingview.com"
+}
+  </script>
+</div>
+<!-- TradingView Widget END -->
+
+
+
+</div>
 <div class="p-4 border-t border-slate-700 flex items-center justify-between">
 <div class="flex items-center space-x-4">
 <button class="flex items-center space-x-1 bg-green-500/10 hover:bg-green-500/20 text-green-400 px-3 py-1.5 rounded-button text-sm whitespace-nowrap">
