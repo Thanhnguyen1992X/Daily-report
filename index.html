@@ -292,32 +292,6 @@ ML
 <span class="text-xl font-semibold">1.0845</span>
 <span class="text-sm text-green-400">+0.0035 (+0.32%)</span>
 </div>
-
-<!-- TradingView Widget BEGIN -->
-<div class="tradingview-widget-container" style="height:100%;width:100%">
-  <div class="tradingview-widget-container__widget" style="height:calc(100% - 32px);width:100%"></div>
-  <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
-  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
-  {
-  "autosize": true,
-  "symbol": "NASDAQ:AAPL",
-  "interval": "D",
-  "timezone": "Etc/UTC",
-  "theme": "light",
-  "style": "1",
-  "locale": "en",
-  "allow_symbol_change": true,
-  "support_host": "https://www.tradingview.com"
-}
-  </script>
-</div>
-<!-- TradingView Widget END -->
-
-
-
-
-
-
 </div>
 <div class="flex items-center space-x-3">
 <div class="flex rounded-full bg-slate-700 p-1">
@@ -1889,46 +1863,46 @@ right: 20,
 bottom: 30,
 left: 50
 },
-tooltip: {
-trigger: 'axis',
-backgroundColor: 'rgba(255, 255, 255, 0.8)',
-borderColor: '#ccc',
-textStyle: {
-color: '#1e293b'
-}
-},
-xAxis: {
-type: 'category',
-data: Array.from({length: 24}, (_, i) => `${i}:00`),
-axisLine: {
-lineStyle: {
-color: '#475569'
-}
-},
-axisLabel: {
-color: '#94a3b8'
-},
-splitLine: {
-show: false
-}
-},
-yAxis: {
-type: 'value',
-axisLine: {
-lineStyle: {
-color: '#475569'
-}
-},
-axisLabel: {
-color: '#94a3b8'
-},
-splitLine: {
-lineStyle: {
-color: '#334155'
-}
-}
-},
-series: [
+// tooltip: {
+// trigger: 'axis',
+// backgroundColor: 'rgba(255, 255, 255, 0.8)',
+// borderColor: '#ccc',
+// textStyle: {
+// color: '#1e293b'
+// }
+// },
+// xAxis: {
+// type: 'category',
+// data: Array.from({length: 24}, (_, i) => `${i}:00`),
+// axisLine: {
+// lineStyle: {
+// color: '#475569'
+// }
+// },
+// axisLabel: {
+// color: '#94a3b8'
+// },
+// splitLine: {
+// show: false
+// }
+// },
+// yAxis: {
+// type: 'value',
+// axisLine: {
+// lineStyle: {
+// color: '#475569'
+// }
+// },
+// axisLabel: {
+// color: '#94a3b8'
+// },
+// splitLine: {
+// lineStyle: {
+// color: '#334155'
+// }
+// }
+// },
+// series: [
 {
 data: [1.0832, 1.0828, 1.0825, 1.0820, 1.0818, 1.0823, 1.0825, 1.0830, 1.0835, 1.0832, 1.0828, 1.0825, 1.0828, 1.0832, 1.0835, 1.0838, 1.0842, 1.0845, 1.0843, 1.0840, 1.0838, 1.0842, 1.0845, 1.0845],
 type: 'line',
