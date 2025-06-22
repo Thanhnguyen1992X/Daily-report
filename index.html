@@ -135,7 +135,7 @@ scrollbar-width: none;
 <!-- Top Header -->
 <div class="px-6 py-3 flex items-center justify-between">
 <div class="flex items-center">
-<h1 class="text-2xl font-['Pacifico'] text-primary mr-8">logo</h1>
+<h1 class="text-2xl font-['Pacifico'] text-primary mr-8">MiLO</h1>
 <div class="hidden md:flex space-x-1">
 <button class="px-3 py-2 text-sm text-slate-300 hover:text-white !rounded-button">Stocks</button>
 <button class="px-3 py-2 text-sm text-primary font-medium border-b-2 border-primary !rounded-button">Forex</button>
@@ -160,9 +160,9 @@ scrollbar-width: none;
 </button>
 <div class="flex items-center space-x-2">
 <div class="w-9 h-9 bg-primary rounded-full flex items-center justify-center text-white font-medium">
-JD
+ML
 </div>
-<span class="text-sm font-medium hidden md:inline">James Donovan</span>
+<span class="text-sm font-medium hidden md:inline">MiLO</span>
 </div>
 </div>
 </div>
@@ -315,6 +315,40 @@ JD
 </div>
 </div>
 <div id="mainChart" class="w-full h-96"></div>
+
+<!-- TradingView Widget BEGIN -->
+<div class="tradingview-widget-container" style="height:100%;width:100%">
+  <div class="tradingview-widget-container__widget" style="height:calc(100% - 32px);width:100%"></div>
+  <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
+  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+  {
+  "autosize": true,
+  "symbol": "NASDAQ:AAPL",
+  "timezone": "Etc/UTC",
+  "theme": "light",
+  "style": "1",
+  "locale": "en",
+  "withdateranges": true,
+  "range": "YTD",
+  "hide_side_toolbar": false,
+  "allow_symbol_change": true,
+  "details": true,
+  "hotlist": true,
+  "show_popup_button": true,
+  "popup_width": "1000",
+  "popup_height": "650",
+  "support_host": "https://www.tradingview.com"
+}
+  </script>
+</div>
+<!-- TradingView Widget END -->
+
+
+
+
+
+
+
 <div class="p-4 border-t border-slate-700 flex items-center justify-between">
 <div class="flex items-center space-x-4">
 <button class="flex items-center space-x-1 bg-green-500/10 hover:bg-green-500/20 text-green-400 px-3 py-1.5 rounded-button text-sm whitespace-nowrap">
