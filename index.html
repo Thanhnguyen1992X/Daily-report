@@ -314,10 +314,11 @@ ML
 </div>
 </div>
 </div>
-<!-- class="w-full h-96" -->
-<!-- <div id="mainChart" > -->
-  <!-- TradingView Widget BEGIN -->
-  <div class="tradingview-widget-container" style="height:100%;width:100%">
+<div id="mainChart" class="w-full h-96"></div>
+
+
+<div id="mainChart" class="tradingview-widget-container" style="height:100%;width:100%"></div>
+<!-- TradingView Widget BEGIN -->
   <div class="tradingview-widget-container__widget" style="height:calc(100% - 32px);width:100%"></div>
   <div class="tradingview-widget-copyright"><a href="https://vn.tradingview.com/" rel="noopener nofollow" target="_blank"><span class="blue-text">Theo dõi mọi thị trường trên TradingView</span></a></div>
   <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
@@ -339,16 +340,12 @@ ML
   ],
   "show_popup_button": true,
   "popup_width": "1600",
-  "popup_height": "900",
+  "popup_height": "1200",
   "support_host": "https://www.tradingview.com"
 }
   </script>
-  </div>
+</div>
 <!-- TradingView Widget END -->
-
-<!-- </div> -->
-
-
 
 
 
@@ -1912,61 +1909,61 @@ textStyle: {
 color: '#1e293b'
 }
 },
-// xAxis: {
-// type: 'category',
-// data: Array.from({length: 24}, (_, i) => `${i}:00`),
-// axisLine: {
-// lineStyle: {
-// color: '#475569'
-// }
-// },
-// axisLabel: {
-// color: '#94a3b8'
-// },
-// splitLine: {
-// show: false
-// }
-// },
-// yAxis: {
-// type: 'value',
-// axisLine: {
-// lineStyle: {
-// color: '#475569'
-// }
-// },
-// axisLabel: {
-// color: '#94a3b8'
-// },
-// splitLine: {
-// lineStyle: {
-// color: '#334155'
-// }
-// }
-// },
-// series: [
-// {
-// data: [1.0832, 1.0828, 1.0825, 1.0820, 1.0818, 1.0823, 1.0825, 1.0830, 1.0835, 1.0832, 1.0828, 1.0825, 1.0828, 1.0832, 1.0835, 1.0838, 1.0842, 1.0845, 1.0843, 1.0840, 1.0838, 1.0842, 1.0845, 1.0845],
-// type: 'line',
-// smooth: true,
-// lineStyle: {
-// color: 'rgba(87, 181, 231, 1)',
-// width: 3
-// },
-// symbol: 'none',
-// areaStyle: {
-// color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-// {
-// offset: 0,
-// color: 'rgba(87, 181, 231, 0.3)'
-// },
-// {
-// offset: 1,
-// color: 'rgba(87, 181, 231, 0.05)'
-// }
-// ])
-// }
-// }
-// ]
+xAxis: {
+type: 'category',
+data: Array.from({length: 24}, (_, i) => `${i}:00`),
+axisLine: {
+lineStyle: {
+color: '#475569'
+}
+},
+axisLabel: {
+color: '#94a3b8'
+},
+splitLine: {
+show: false
+}
+},
+yAxis: {
+type: 'value',
+axisLine: {
+lineStyle: {
+color: '#475569'
+}
+},
+axisLabel: {
+color: '#94a3b8'
+},
+splitLine: {
+lineStyle: {
+color: '#334155'
+}
+}
+},
+series: [
+{
+data: [1.0832, 1.0828, 1.0825, 1.0820, 1.0818, 1.0823, 1.0825, 1.0830, 1.0835, 1.0832, 1.0828, 1.0825, 1.0828, 1.0832, 1.0835, 1.0838, 1.0842, 1.0845, 1.0843, 1.0840, 1.0838, 1.0842, 1.0845, 1.0845],
+type: 'line',
+smooth: true,
+lineStyle: {
+color: 'rgba(87, 181, 231, 1)',
+width: 3
+},
+symbol: 'none',
+areaStyle: {
+color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+{
+offset: 0,
+color: 'rgba(87, 181, 231, 0.3)'
+},
+{
+offset: 1,
+color: 'rgba(87, 181, 231, 0.05)'
+}
+])
+}
+}
+]
 };
 mainChart.setOption(mainChartOption);
 
