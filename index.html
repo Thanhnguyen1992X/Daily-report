@@ -315,35 +315,37 @@ ML
 </div>
 </div>
 <div id="mainChart" class="w-full h-96"></div>
-<div id="mainChart" class="w-full h-96">
 <!-- TradingView Widget BEGIN -->
-<div class="tradingview-widget-container" style="height:100%;width:100%">
-  <div class="tradingview-widget-container__widget" style="height:calc(100% - 32px);width:100%"></div>
-  <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
-  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
-  {
+<div id="123">
+<!-- TradingView Widget END -->
+<script id="123" type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+ document.addEventListener('DOMContentLoaded', function() {
+const 123 = echarts.init(document.getElementById('123'));
+const 123Option = {
+{
   "autosize": true,
-  "symbol": "BITSTAMP:BTCUSD",
+  "symbol": "NASDAQ:AAPL",
   "timezone": "Etc/UTC",
-  "theme": "dark",
+  "theme": "light",
   "style": "1",
   "locale": "en",
-  "withdateranges": true,
+  "hide_legend": true,
   "range": "YTD",
-  "hide_side_toolbar": false,
-  "allow_symbol_change": true,
-  "details": true,
-  "hotlist": true,
-  "show_popup_button": true,
-  "popup_width": "1000",
-  "popup_height": "650",
+  "allow_symbol_change": false,
+  "save_image": false,
+  "hide_volume": true,
   "support_host": "https://www.tradingview.com"
 }
-  </script>
+};
+123Chart.setOption(123Option);
+// Resize charts when window size changes
+window.addEventListener('resize', function() {
+123Chart.resize();
+});
+});
+</script>
 </div>
 
-<!-- TradingView Widget END -->
-</div>
 <div class="p-4 border-t border-slate-700 flex items-center justify-between">
 <div class="flex items-center space-x-4">
 <button class="flex items-center space-x-1 bg-green-500/10 hover:bg-green-500/20 text-green-400 px-3 py-1.5 rounded-button text-sm whitespace-nowrap">
@@ -1714,11 +1716,9 @@ ML
 </div>
 </div>
 
-
-
-
 </div>
 </main>
+
 <script id="chartInitialization">
 document.addEventListener('DOMContentLoaded', function() {
 // Initialize new charts
@@ -1893,45 +1893,45 @@ bottom: 30,
 left: 50
 },
 tooltip: {
-// trigger: 'axis',
-// backgroundColor: 'rgba(255, 255, 255, 0.8)',
-// borderColor: '#ccc',
-// textStyle: {
-// color: '#1e293b'
-// }
-// },
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.8)',
+borderColor: '#ccc',
+textStyle: {
+color: '#1e293b'
+}
+},
 xAxis: {
-// type: 'category',
-// data: Array.from({length: 24}, (_, i) => `${i}:00`),
-// axisLine: {
-// lineStyle: {
-// color: '#475569'
-// }
-// },
-// axisLabel: {
-// color: '#94a3b8'
-// },
-// splitLine: {
-// show: false
-// }
-// },
+type: 'category',
+data: Array.from({length: 24}, (_, i) => `${i}:00`),
+axisLine: {
+lineStyle: {
+color: '#475569'
+}
+},
+ axisLabel: {
+color: '#94a3b8'
+},
+splitLine: {
+show: false
+}
+},
 yAxis: {
-// type: 'value',
-// axisLine: {
-// lineStyle: {
-// color: '#475569'
-// }
-// },
-// axisLabel: {
-// color: '#94a3b8'
-// },
-// splitLine: {
-// lineStyle: {
-// color: '#334155'
-// }
-// }
-// },
-// series: [
+type: 'value',
+axisLine: {
+lineStyle: {
+color: '#475569'
+}
+},
+axisLabel: {
+color: '#94a3b8'
+},
+splitLine: {
+lineStyle: {
+color: '#334155'
+}
+}
+},
+series: [
 {
 data: [1.0832, 1.0828, 1.0825, 1.0820, 1.0818, 1.0823, 1.0825, 1.0830, 1.0835, 1.0832, 1.0828, 1.0825, 1.0828, 1.0832, 1.0835, 1.0838, 1.0842, 1.0845, 1.0843, 1.0840, 1.0838, 1.0842, 1.0845, 1.0845],
 type: 'line',
@@ -1957,9 +1957,6 @@ color: 'rgba(87, 181, 231, 0.05)'
 ]
 };
 mainChart.setOption(mainChartOption);
-
-
-
 
 
 // Heatmap Chart
@@ -2170,5 +2167,6 @@ this.classList.toggle('active', input.checked);
 });
 });
 </script>
+
 </body>
 </html>
